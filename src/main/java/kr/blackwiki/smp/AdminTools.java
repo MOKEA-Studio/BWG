@@ -87,7 +87,7 @@ final class AdminTools implements Listener {
         int start=page*36;
         for(int i=start;i<Math.min(start+36,list.size());i++){
             Player v=list.get(i);UUID id=v.getUniqueId();Location l=v.getLocation();
-            p.gui.button(m,9+i-start,Material.PLAYER_HEAD,v.getName(),b->{Player target=Bukkit.getPlayer(id);if(target==null){p.tell(b,"플레이어가 나갔습니다.");teleportMenu(b,page);return;}b.closeInventory();b.teleport(target.getLocation());p.tell(b,target.getName()+"님에게 이동했습니다.");},
+            p.gui.button(m,9+i-start,Material.PLAYER_HEAD,v.getName(),b->{Player target=Bukkit.getPlayer(id);if(target==null){p.tell(b,"플레이어가 나갔습니다.");teleportMenu(b,page);return;}b.closeInventory();dropCrown(b);b.teleport(target.getLocation());p.tell(b,target.getName()+"님에게 이동했습니다.");},
                 l.getWorld().getName()+" · "+l.getBlockX()+", "+l.getBlockY()+", "+l.getBlockZ(),"체력 "+(int)Math.ceil(v.getHealth())+" · 핑 "+v.getPing()+"ms",p.queue.waiting(v)?"대기열":"클릭: 이 플레이어에게 TP");
             ItemStack head=m.inventory.getItem(9+i-start);if(head!=null&&head.getItemMeta() instanceof SkullMeta skull){skull.setOwningPlayer(v);head.setItemMeta(skull);}
         }
@@ -168,13 +168,17 @@ final class AdminTools implements Listener {
         }
     }
     private static void pose(Display d,Transformation t){d.setInterpolationDelay(0);d.setInterpolationDuration(ANIMATE_TICKS);d.setTransformation(t);}
+    /** Crown parts are cosmetic riders; they must not count as "carrying someone". */
+    boolean otherPassengers(Player a){Crown c=crowns.get(a.getUniqueId());List<Display> mine=c==null?List.of():c.parts();return a.getPassengers().stream().anyMatch(e->!mine.contains(e));}
+    /** Call before teleporting a crowned player; keepCrowns re-attaches it within a second. */
+    void dropCrown(Player a){removeCrown(a.getUniqueId());}
     private void removeCrown(UUID id){Crown old=crowns.remove(id);lastSpot.remove(id);if(old!=null)old.remove();}
     private void keepCrowns(){
         crowns.entrySet().removeIf(e->{Player a=Bukkit.getPlayer(e.getKey());if(a!=null&&crowned(a))return false;e.getValue().remove();return true;});
         for(Player a:Bukkit.getOnlinePlayers()){
             if(!crowned(a))continue;Crown c=crowns.get(a.getUniqueId());
             boolean ok=c!=null&&c.parts().stream().allMatch(d->d.isValid()&&a.getPassengers().contains(d));
-            if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR){if(c!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);
+            if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR||p.queue.waiting(a)){if(c!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);
         }
     }
     /** Drop the crown before any teleport so passengers never block it; keepCrowns re-attaches within a second. */

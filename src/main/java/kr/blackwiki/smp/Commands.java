@@ -20,7 +20,7 @@ final class Commands implements CommandExecutor,TabCompleter {
             String cmd=command.getName();Player a=sender instanceof Player v?v:null;
             if(cmd.equals("smpcoingive")||cmd.equals("smpcoindebit")){p.adminCoins.command(sender,args,cmd.equals("smpcoindebit"));return true;}
             if(cmd.equals("smprealtime")){p.realTime.command(sender,args);return true;}if(cmd.equals("smplights")){p.lighting.command(sender,args);return true;}
-            if(cmd.equals("smpspawndesign")){p.spawnDesign.command(sender,args);return true;}if(cmd.equals("smpupgrade")){if(BanService.operator(sender)){p.tell(sender,p.upgrades.status());p.tell(sender,"자동 업데이트: "+p.updates.status());}else p.tell(sender,"OP만 사용할 수 있습니다.");return true;}
+            if(cmd.equals("smpspawndesign")){p.spawnDesign.command(sender,args);return true;}if(cmd.equals("smpupgrade")){if(BanService.operator(sender)){if(Set.of("확인","check").contains(arg(args,0))){p.updates.checkNow(sender);return true;}p.tell(sender,p.upgrades.status());p.tell(sender,"자동 업데이트: "+p.updates.status()+" · 즉시 확인: /업데이트상태 확인");}else p.tell(sender,"OP만 사용할 수 있습니다.");return true;}
             if(cmd.equals("smpeventstart")){p.events.command(sender,args);return true;}if(cmd.equals("smpeventstop")){p.events.stop(sender);return true;}if(cmd.equals("smpevent")&&a==null){p.tell(sender,p.events.status());return true;}
             if(cmd.equals("smpbedrock")&&a==null){p.bedrock.command(sender,args);return true;}
             if(cmd.equals("smpreset")){p.resets.request(sender,args);return true;}

@@ -29,6 +29,11 @@ final class AutoUpdateService {
     }
 
     String status(){return status;}
+    /** /업데이트상태 확인: check GitHub right now instead of waiting for the next interval. */
+    void checkNow(org.bukkit.command.CommandSender sender){
+        p.tell(sender,"GitHub 최신 릴리스를 확인합니다…");
+        Bukkit.getScheduler().runTaskAsynchronously(p,()->{check();p.sync(()->p.tell(sender,"자동 업데이트: "+status));});
+    }
 
     synchronized void check(){
         String repo=p.cfg().getString("auto-update.repository","").trim(),current=p.getDescription().getVersion();

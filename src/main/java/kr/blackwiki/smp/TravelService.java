@@ -47,7 +47,7 @@ final class TravelService implements Listener {
         if(Set.of("spawn","스폰","로비","wilderness","야생","rtp","home","홈","sethome","홈설정","tpa","tpahere","tpaaccept","tpa수락","tp","teleport","warp","back","suicide","kill").contains(root)){e.setCancelled(true);p.tell(e.getPlayer(),"전투 중 이동·도주 명령어를 사용할 수 없습니다. "+combatLeft(e.getPlayer())+"초");}
     }
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void moved(PlayerMoveEvent e){if(!operations.containsKey(e.getPlayer().getUniqueId()))return;if(e.hasChangedPosition()&&(e.getFrom().getWorld()!=e.getTo().getWorld()||e.getFrom().distanceSquared(e.getTo())>0.0001))cancel(e.getPlayer(),"움직여서 이동이 취소되었습니다.");}
-    boolean allowed(Player a){if(p.queue.waiting(a)){p.tell(a,"대기열 입장 후 이용하세요.");return false;}if(inCombat(a)){p.tell(a,"전투가 끝난 뒤 이용하세요. "+combatLeft(a)+"초");return false;}if(a.isDead()||a.isInsideVehicle()||!a.getPassengers().isEmpty()){p.tell(a,"살아 있고 탑승하지 않은 상태에서 이용하세요.");return false;}return true;}
+    boolean allowed(Player a){if(p.queue.waiting(a)){p.tell(a,"대기열 입장 후 이용하세요.");return false;}if(inCombat(a)){p.tell(a,"전투가 끝난 뒤 이용하세요. "+combatLeft(a)+"초");return false;}if(a.isDead()||a.isInsideVehicle()||p.admin.otherPassengers(a)){p.tell(a,"살아 있고 탑승하지 않은 상태에서 이용하세요.");return false;}return true;}
     void go(Player a,Location target){go(a,target,target!=null&&p.safe(target)?10:5);}
     void go(Player a,Location target,int seconds){if(target==null){p.tell(a,"목적지가 없습니다.");return;}Location at=target.clone();begin(a,seconds,()->CompletableFuture.completedFuture(at),()->{},true);}
     void warm(Player a,Supplier<CompletableFuture<Location>> target,Runnable success){begin(a,5,target,success,true);}
@@ -65,7 +65,7 @@ final class TravelService implements Listener {
                 if(!token.equals(operations.get(a.getUniqueId())))return;
                 if(ex!=null||l==null||Bukkit.getWorld(l.getWorld().getUID())!=l.getWorld()||l.getWorld()==p.queue.world||p.outside(l)||l.getWorld()==p.wildWorld&&p.resets.busy()){cancel(a,"안전한 목적지가 없습니다.");return;}
                 if(!a.isOnline()||a.isDead()||inCombat(a)||p.queue.waiting(a)||a.getWorld()!=origin.getWorld()||a.getLocation().distanceSquared(origin)>.0001){cancel(a,"이동이 취소되었습니다.");return;}
-                operations.remove(a.getUniqueId());a.teleportAsync(l).whenComplete((ok,error)->p.sync(()->{if(error==null&&Boolean.TRUE.equals(ok)&&a.isOnline()){success.run();p.tell(a,"이동했습니다.");}else if(a.isOnline())p.tell(a,"이동에 실패했습니다.");}));
+                operations.remove(a.getUniqueId());p.admin.dropCrown(a);a.teleportAsync(l).whenComplete((ok,error)->p.sync(()->{if(error==null&&Boolean.TRUE.equals(ok)&&a.isOnline()){success.run();p.tell(a,"이동했습니다.");}else if(a.isOnline())p.tell(a,"이동에 실패했습니다.");}));
             }));
         },1,5);warmups.put(a.getUniqueId(),task);
     }
