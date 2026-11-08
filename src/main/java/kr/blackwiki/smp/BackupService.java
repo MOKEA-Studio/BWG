@@ -40,7 +40,7 @@ final class BackupService implements AutoCloseable {
             pluginSnapshot.put("transfers.yml",p.transfers.ledger.snapshot().getBytes(StandardCharsets.UTF_8));
             pluginSnapshot.put("market.yml",p.market.ledger.snapshot().getBytes(StandardCharsets.UTF_8));
             Path resetFile=p.getDataFolder().toPath().resolve("wild-reset.yml");if(Files.isRegularFile(resetFile))pluginSnapshot.put("wild-reset.yml",Files.readAllBytes(resetFile));
-            for(String name:List.of("graves.yml","event.yml","spawn-build.yml","upgrade.yml","discord-control.key")){Path extra=p.getDataFolder().toPath().resolve(name);if(Files.isRegularFile(extra))pluginSnapshot.put(name,Files.readAllBytes(extra));}
+            for(String name:List.of("graves.yml","event.yml","spawn-build.yml","upgrade.yml","discord-control.key","mutes.yml")){Path extra=p.getDataFolder().toPath().resolve(name);if(Files.isRegularFile(extra))pluginSnapshot.put(name,Files.readAllBytes(extra));}
             pluginSnapshot.put("bans.yml",p.bans.snapshot().getBytes(StandardCharsets.UTF_8));
             Path npcFile=p.getDataFolder().toPath().resolve("npcs.yml");if(Files.isRegularFile(npcFile))pluginSnapshot.put("npcs.yml",Files.readAllBytes(npcFile));
             Future<?> flush=p.data.flushFuture();

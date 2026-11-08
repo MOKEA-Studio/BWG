@@ -144,6 +144,12 @@ commands:
   smpban:
     aliases: [벤, 밴]
     description: OP 전용 기간 차단 / 차단 해제 / 목록
+  smpmute:
+    aliases: [mute, 뮤트, 채팅금지]
+    description: OP 전용 채팅·귓속말·표지판 기간 제한 / 해제 / 목록
+  smpadtp:
+    aliases: [adtp, 관리자tp]
+    description: OP 전용 플레이어 머리 GUI로 텔레포트
   smpdiscord:
     aliases: [디스코드]
     description: OP 전용 Discord 연결 상태 / 테스트 / 전환
