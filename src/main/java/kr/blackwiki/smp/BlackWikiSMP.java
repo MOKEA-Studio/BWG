@@ -79,7 +79,7 @@ public final class BlackWikiSMP extends JavaPlugin implements Listener {
         if(getConfig().getInt("cleanup.interval-seconds",180)<30||getConfig().getInt("settings.persist-seconds",60)<10||getConfig().getLong("audit.max-file-mb",16)<1||getConfig().getInt("audit.files-to-keep",5)<1)throw new IllegalArgumentException("Invalid persistence/cleanup/audit settings");
     }
     @Override public void onDisable(){
-        ready=false;if(lighting!=null)lighting.close();if(realTime!=null)realTime.close();if(hud!=null)hud.close();if(bedrock!=null)bedrock.close();Bukkit.getScheduler().cancelTasks(this);if(swords!=null)swords.close();if(armor!=null)armor.close();if(trees!=null)trees.close();if(events!=null)events.close();if(voice!=null)voice.close();if(spawnDesign!=null)spawnDesign.close();if(monsters!=null)monsters.close();
+        ready=false;if(admin!=null)admin.close();if(lighting!=null)lighting.close();if(realTime!=null)realTime.close();if(hud!=null)hud.close();if(bedrock!=null)bedrock.close();Bukkit.getScheduler().cancelTasks(this);if(swords!=null)swords.close();if(armor!=null)armor.close();if(trees!=null)trees.close();if(events!=null)events.close();if(voice!=null)voice.close();if(spawnDesign!=null)spawnDesign.close();if(monsters!=null)monsters.close();
         if(pistols!=null)pistols.close();if(discord!=null)discord.close();
         if(backups!=null)backups.close();if(queue!=null)queue.shutdown();if(travel!=null)travel.close();
         for(Player a:Bukkit.getOnlinePlayers()){a.playerListName(Component.text(a.getName()));a.sendPlayerListHeaderAndFooter(Component.empty(),Component.empty());a.sendActionBar(Component.empty());}

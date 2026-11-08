@@ -159,6 +159,15 @@ commands:
   smpadtp:
     aliases: [adtp, 관리자tp]
     description: OP 전용 플레이어 머리 GUI로 텔레포트
+  smpking:
+    aliases: [king, 왕관]
+    description: OP 전용 머리 위 왕관 씌우기/벗기기
+  smphack:
+    aliases: [핵, hack]
+    description: OP 전용 핵 사용자 최대 기간 차단 + 전체 공지
+  smpsafe:
+    aliases: [안전일시]
+    description: OP 전용 안전지대 관리자 편집 on/off (재시작 시 off)
   smpdiscord:
     aliases: [디스코드]
     description: OP 전용 Discord 연결 상태 / 테스트 / 전환

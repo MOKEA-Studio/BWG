@@ -18,7 +18,7 @@ final class Protection implements Listener {
     private final BlackWikiSMP p;
     Protection(BlackWikiSMP p){this.p=p;}
     boolean protectedAt(Location l){return l.getWorld()==p.queue.world||p.safe(l);}
-    boolean build(Player a,Location l){return !p.queue.waiting(a)&&(!protectedAt(l)||(a.hasPermission("blackwikismp.spawn.build")&&p.builders.contains(a.getUniqueId())&&l.getWorld()!=p.queue.world));}
+    boolean build(Player a,Location l){return !p.queue.waiting(a)&&(!protectedAt(l)||((p.admin.overrides(a)||a.hasPermission("blackwikismp.spawn.build")&&p.builders.contains(a.getUniqueId()))&&l.getWorld()!=p.queue.world));}
     boolean crosses(Location a,Location b){return protectedAt(a)||protectedAt(b);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void place(BlockPlaceEvent e){if(!build(e.getPlayer(),e.getBlock().getLocation()))e.setCancelled(true);else p.data.audit("PLACE",e.getPlayer().getName(),e.getBlock().getLocation(),e.getBlock().getType().name());}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void multi(BlockMultiPlaceEvent e){if(e.getReplacedBlockStates().stream().anyMatch(s->!build(e.getPlayer(),s.getLocation())))e.setCancelled(true);}
@@ -31,7 +31,7 @@ final class Protection implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void bucketFill(PlayerBucketFillEvent e){if(!build(e.getPlayer(),e.getBlock().getLocation()))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void damage(EntityDamageEvent e){
         if(p.npcs.isNpc(e.getEntity())){e.setCancelled(true);return;}
-        Location at=e.getEntity().getLocation();if(protectedAt(at)&&(e.getEntity() instanceof Player||p.cfg().getBoolean("spawn.protect-mobs",true))){e.setCancelled(true);return;}
+        Location at=e.getEntity().getLocation();Player by0=e instanceof EntityDamageByEntityEvent x?TravelService.attacker(x.getDamager()):null;if(!(e.getEntity() instanceof Player)&&p.admin.overrides(by0))return;if(protectedAt(at)&&(e.getEntity() instanceof Player||p.cfg().getBoolean("spawn.protect-mobs",true))){e.setCancelled(true);return;}
         if(e instanceof EntityDamageByEntityEvent by){Player a=TravelService.attacker(by.getDamager());if(a!=null&&(protectedAt(a.getLocation())||p.queue.waiting(a))){e.setCancelled(true);return;}if(a!=null&&e.getEntity() instanceof Player b&&p.teams.friendly(a,b))e.setCancelled(true);}
     }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void potion(PotionSplashEvent e){Player a=e.getPotion().getShooter() instanceof Player v?v:null;for(LivingEntity l:e.getAffectedEntities())if(protectedAt(l.getLocation())||(a!=null&&(protectedAt(a.getLocation())||p.queue.waiting(a)||(l instanceof Player b&&p.teams.friendly(a,b)))))e.setIntensity(l,0);}
@@ -55,8 +55,8 @@ final class Protection implements Listener {
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void spawn(CreatureSpawnEvent e){if(e.getLocation().getWorld()==p.queue.world||(p.safe(e.getLocation())&&e.getEntity() instanceof Monster))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void hang(HangingBreakByEntityEvent e){if(protectedAt(e.getEntity().getLocation())&&(!(e.getRemover() instanceof Player a)||!build(a,e.getEntity().getLocation())))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void hanging(HangingBreakEvent e){if(e.getCause()!=HangingBreakEvent.RemoveCause.ENTITY&&protectedAt(e.getEntity().getLocation()))e.setCancelled(true);}
-    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void vehicle(VehicleDamageEvent e){if(protectedAt(e.getVehicle().getLocation()))e.setCancelled(true);}
-    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void vehicleDestroy(VehicleDestroyEvent e){if(protectedAt(e.getVehicle().getLocation()))e.setCancelled(true);}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void vehicle(VehicleDamageEvent e){if(protectedAt(e.getVehicle().getLocation())&&!p.admin.overrides(TravelService.attacker(e.getAttacker())))e.setCancelled(true);}
+    @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void vehicleDestroy(VehicleDestroyEvent e){if(protectedAt(e.getVehicle().getLocation())&&!p.admin.overrides(TravelService.attacker(e.getAttacker())))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portal(PlayerPortalEvent e){if(protectedAt(e.getFrom()))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void portalCreate(org.bukkit.event.world.PortalCreateEvent e){if(e.getBlocks().stream().anyMatch(b->protectedAt(b.getLocation())))e.setCancelled(true);}
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void move(PlayerMoveEvent e){Player a=e.getPlayer();if(p.travel.inCombat(a)&&!p.safe(e.getFrom())&&p.safe(e.getTo())){e.setTo(e.getFrom());p.tell(a,"전투가 끝난 뒤 스폰 보호구역에 들어갈 수 있습니다.");}if(e.hasChangedPosition()&&!p.queue.waiting(a)&&p.cfg().getBoolean("border.kill-outside",true)&&p.outside(e.getTo())&&!a.isDead())a.setHealth(0);}

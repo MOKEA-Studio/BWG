@@ -7,14 +7,20 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Transformation;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import java.nio.file.*;
 import java.time.Instant;
 import java.util.*;
 
-/** OP tools: timed mute (chat, whispers, signs) and a player-head teleport menu. */
+/** OP tools: timed mute, head-teleport menu, crowns, hacker punishment and the temporary safe-zone override. */
 final class AdminTools implements Listener {
     /** Private/broadcast chat commands a muted player could use to bypass the chat block. */
     static final Set<String> CHAT_COMMANDS=Set.of("msg","tell","w","whisper","r","reply","me","say","teammsg","tm","귓","귓속말");
@@ -22,8 +28,14 @@ final class AdminTools implements Listener {
     final BanLedger mutes=new BanLedger();
     private final Path file;
 
+    private final NamespacedKey crownKey;
+    private final Map<UUID,ItemDisplay> crowns=new HashMap<>();
+    /** /안전일시: while on, OPs may build and kill non-player entities inside protected spawn. Resets on restart. */
+    volatile boolean safeOverride;
+
     AdminTools(BlackWikiSMP p)throws Exception{
-        this.p=p;file=p.getDataFolder().toPath().resolve("mutes.yml");if(!Files.exists(file))return;
+        this.p=p;crownKey=new NamespacedKey(p,"crown");
+        Bukkit.getScheduler().runTaskTimer(p,this::keepCrowns,20,20);file=p.getDataFolder().toPath().resolve("mutes.yml");if(!Files.exists(file))return;
         YamlConfiguration y=new YamlConfiguration();y.load(file.toFile());var section=y.getConfigurationSection("mutes");if(section==null)return;Map<UUID,BanLedger.Entry> map=new LinkedHashMap<>();
         for(String key:section.getKeys(false)){String q="mutes."+key+".";map.put(UUID.fromString(key),new BanLedger.Entry(UUID.fromString(key),y.getString(q+"name",key),y.getString(q+"actor","console"),y.getString(q+"reason","관리자 채팅 제한"),y.getLong(q+"created"),y.getLong(q+"expires")));}
         mutes.replace(map);
@@ -80,4 +92,57 @@ final class AdminTools implements Listener {
         p.gui.button(m,48,Material.CLOCK,"새로고침",b->teleportMenu(b,page));
         p.gui.show(a,m);
     }
+
+    // ---- /king: an ItemDisplay riding the player, so the client moves it with the head (no trailing). ----
+    void king(CommandSender actor,String[] args){
+        if(!BanService.operator(actor)){p.tell(actor,"OP만 사용할 수 있습니다.");return;}
+        Player target=args.length>0?Bukkit.getPlayerExact(args[0]):actor instanceof Player a?a:null;
+        if(target==null){p.tell(actor,"/king [접속 중인 닉네임] · 왕관 씌우기/벗기기");return;}
+        var data=target.getPersistentDataContainer();boolean on=!data.has(crownKey,PersistentDataType.BYTE);
+        if(on){data.set(crownKey,PersistentDataType.BYTE,(byte)1);attachCrown(target);}else{data.remove(crownKey);removeCrown(target.getUniqueId());}
+        p.tell(actor,target.getName()+"님 왕관: "+(on?"씌움":"벗김"));if(target!=actor)p.tell(target,on?"머리 위에 왕관이 씌워졌습니다.":"왕관이 벗겨졌습니다.");
+    }
+    private boolean crowned(Player a){return a.getPersistentDataContainer().has(crownKey,PersistentDataType.BYTE);}
+    private void attachCrown(Player a){
+        removeCrown(a.getUniqueId());if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR)return;
+        ItemDisplay crown=a.getWorld().spawn(a.getLocation(),ItemDisplay.class,d->{
+            d.setPersistent(false);d.setItemStack(new ItemStack(Material.GOLDEN_HELMET));d.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.HEAD);
+            d.setBillboard(Display.Billboard.VERTICAL);d.setTeleportDuration(0);d.setInterpolationDuration(0);
+            d.setTransformation(new Transformation(new Vector3f(0,.3f,0),new Quaternionf(),new Vector3f(.75f,.75f,.75f),new Quaternionf()));
+        });
+        if(!a.addPassenger(crown)){crown.remove();return;}
+        crowns.put(a.getUniqueId(),crown);
+    }
+    private void removeCrown(UUID id){ItemDisplay old=crowns.remove(id);if(old!=null)old.remove();}
+    private void keepCrowns(){
+        crowns.entrySet().removeIf(e->{Player a=Bukkit.getPlayer(e.getKey());if(a!=null&&crowned(a))return false;e.getValue().remove();return true;});
+        for(Player a:Bukkit.getOnlinePlayers()){if(!crowned(a))continue;ItemDisplay d=crowns.get(a.getUniqueId());boolean ok=d!=null&&d.isValid()&&a.getPassengers().contains(d);if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR){if(d!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);}
+    }
+    /** Drop the crown before any teleport so passengers never block it; keepCrowns re-attaches within a second. */
+    @EventHandler(priority=EventPriority.LOWEST) public void teleport(PlayerTeleportEvent e){removeCrown(e.getPlayer().getUniqueId());}
+    @EventHandler public void quit(PlayerQuitEvent e){removeCrown(e.getPlayer().getUniqueId());}
+    @EventHandler public void death(org.bukkit.event.entity.PlayerDeathEvent e){removeCrown(e.getPlayer().getUniqueId());}
+    void close(){for(ItemDisplay d:crowns.values())d.remove();crowns.clear();}
+
+    // ---- /핵 닉 [사유]: longest ban, lightning effect, server-wide notice. ----
+    void hack(CommandSender actor,String[] args){
+        if(!BanService.operator(actor)){p.tell(actor,"OP만 사용할 수 있습니다.");return;}
+        if(args.length<1){p.tell(actor,"/핵 닉네임 [사유] · 최대 기간 차단 + 전체 공지");return;}
+        try{
+            var t=p.bans.resolve(args[0]);String reason=args.length>1?"핵 사용 · "+String.join(" ",Arrays.copyOfRange(args,1,args.length)):"핵(불법 프로그램) 사용";
+            Player online=Bukkit.getPlayer(t.id());if(online!=null)online.getWorld().strikeLightningEffect(online.getLocation());
+            if(!p.bans.ban(actor,t.id(),p.cfg().getLong("moderation.max-ban-days",3650)*86400,reason))return;
+            Bukkit.broadcast(net.kyori.adventure.text.Component.text("[처벌] "+t.name()+"님이 핵 사용으로 영구 차단되었습니다.",net.kyori.adventure.text.format.NamedTextColor.RED));
+        }catch(IllegalArgumentException ex){p.tell(actor,ex.getMessage());}
+    }
+
+    // ---- /안전일시 on|off ----
+    void safeOverride(CommandSender actor,String[] args){
+        if(!BanService.operator(actor)){p.tell(actor,"OP만 사용할 수 있습니다.");return;}
+        String a=args.length>0?args[0].toLowerCase(Locale.ROOT):"";
+        if(Set.of("on","켜기").contains(a))safeOverride=true;else if(Set.of("off","끄기").contains(a))safeOverride=false;else{p.tell(actor,"/안전일시 on|off · 현재: "+(safeOverride?"on":"off"));return;}
+        p.tell(actor,"안전지대 관리자 편집: "+(safeOverride?"on · OP만 블록 파괴·설치·수정, 엔티티 처치 가능 (재시작 시 off)":"off · 보호 복구"));
+        p.discord.moderation(actor.getName(),"안전지대 관리자 편집 "+(safeOverride?"on":"off"));
+    }
+    boolean overrides(Player a){return safeOverride&&a!=null&&a.isOp();}
 }
