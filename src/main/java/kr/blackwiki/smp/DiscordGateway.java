@@ -50,7 +50,7 @@ final class DiscordGateway implements AutoCloseable {
     void start(){synchronized(lock){if(closed||fatal||connecting||reconnect!=null||link!=null)return;reconnect=timer.schedule(this::connect,0,TimeUnit.MILLISECONDS);}}
     private static URI discover(String token)throws Exception{
         try(HttpClient client=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NEVER).build()){
-            HttpRequest r=HttpRequest.newBuilder(URI.create("https://discord.com/api/v10/gateway/bot")).timeout(Duration.ofSeconds(8)).header("Authorization","Bot "+DiscordRelay.token(token)).header("User-Agent","BlackWikiSMP/3.3").GET().build();
+            HttpRequest r=HttpRequest.newBuilder(URI.create("https://discord.com/api/v10/gateway/bot")).timeout(Duration.ofSeconds(8)).header("Authorization","Bot "+DiscordRelay.token(token)).header("User-Agent","BlackWikiSMP/"+Version.V).GET().build();
             var reply=client.send(r,HttpResponse.BodyHandlers.ofString());if(reply.statusCode()==401)throw new GatewayFatal("봇 토큰 인증 실패");if(reply.statusCode()==429)throw new IllegalStateException("Gateway 요청 제한");if(reply.statusCode()!=200)throw new IllegalStateException("Gateway 조회 실패");
             JsonObject d=JsonParser.parseString(reply.body()).getAsJsonObject();if(d.has("session_start_limit")&&d.getAsJsonObject("session_start_limit").get("remaining").getAsInt()==0)throw new GatewayFatal("Gateway 세션 시작 한도 · 나중에 도우미/연동을 재시작하세요");return gatewayUri(d.get("url").getAsString());
         }

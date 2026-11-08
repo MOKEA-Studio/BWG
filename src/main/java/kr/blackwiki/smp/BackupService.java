@@ -57,7 +57,7 @@ final class BackupService implements AutoCloseable {
                     String name="BlackWikiSMP-"+ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss-SSS"))+".zip";
                     Path complete=dest.resolve(name);partial=dest.resolve(name+".partial");
                     try(ZipOutputStream out=new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(partial)))){
-                        out.setLevel(1);putText(out,"RESTORE.txt","BlackWikiSMP 3.3 backup\nStop server before restoring. Restore worlds/ directories to their original paths and plugins/BlackWikiSMP/ to plugins/BlackWikiSMP/. Never restore while the server is running.\n");
+                        out.setLevel(1);putText(out,"RESTORE.txt","BlackWikiSMP "+Version.V+" backup\nStop server before restoring. Restore worlds/ directories to their original paths and plugins/BlackWikiSMP/ to plugins/BlackWikiSMP/. Never restore while the server is running.\n");
                         StringBuilder manifest=new StringBuilder("created="+Instant.now()+"\n");int i=0;
                         for(Path root:worldRoots){String entry="worlds/"+(i++)+"-"+root.getFileName()+"/";manifest.append(entry).append(" -> ").append(root).append('\n');zipTree(out,root,entry);}
                         // Plugin files are copied from a separate immutable snapshot to avoid live write races.

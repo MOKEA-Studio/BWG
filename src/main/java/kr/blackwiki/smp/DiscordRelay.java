@@ -20,7 +20,7 @@ final class DiscordRelay implements AutoCloseable {
     static final class WebTransport implements Transport {
         private final HttpClient client=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).followRedirects(HttpClient.Redirect.NEVER).build();
         @Override public Reply send(URI endpoint,String token,String payload)throws Exception{
-            HttpRequest request=HttpRequest.newBuilder(endpoint).timeout(Duration.ofSeconds(8)).header("Content-Type","application/json; charset=utf-8").header("User-Agent","BlackWikiSMP/3.3").header("Authorization","Bot "+token).POST(HttpRequest.BodyPublishers.ofString(payload,StandardCharsets.UTF_8)).build();
+            HttpRequest request=HttpRequest.newBuilder(endpoint).timeout(Duration.ofSeconds(8)).header("Content-Type","application/json; charset=utf-8").header("User-Agent","BlackWikiSMP/"+Version.V).header("Authorization","Bot "+token).POST(HttpRequest.BodyPublishers.ofString(payload,StandardCharsets.UTF_8)).build();
             HttpResponse<String> r=client.send(request,HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));return new Reply(r.statusCode(),r.body(),r.headers().map());
         }
     @Override public void close(){client.shutdownNow();}

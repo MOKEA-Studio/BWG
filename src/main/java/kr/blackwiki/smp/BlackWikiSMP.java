@@ -52,7 +52,7 @@ public final class BlackWikiSMP extends JavaPlugin implements Listener {
             Bukkit.getScheduler().runTaskTimer(this,this::tick,20,20);
             Bukkit.getScheduler().runTaskTimer(this,hud::tick,1,5);Bukkit.getScheduler().runTaskTimer(this,swords::tick,1,1);Bukkit.getScheduler().runTaskTimer(this,armor::tick,1,5);
             for(Player p:Bukkit.getOnlinePlayers()){data.user(p);bedrock.decorate(p);vaults.load(p);market.reconcile(p);graves.reconcile(p);titles.sync(p);queue.join(p);if(!queue.waiting(p))data.startSession(p);}
-            ready=true;monsters.refresh();Bukkit.getScheduler().runTaskLater(this,spawnDesign::auto,20);getLogger().info("BlackWikiSMP 3.3 enabled. Paper "+Bukkit.getMinecraftVersion()+" / Java "+Runtime.version().feature());
+            ready=true;monsters.refresh();Bukkit.getScheduler().runTaskLater(this,spawnDesign::auto,20);getLogger().info("BlackWikiSMP "+Version.V+" enabled. Paper "+Bukkit.getMinecraftVersion()+" / Java "+Runtime.version().feature());
             if(!Bukkit.getMinecraftVersion().startsWith("26.2"))getLogger().warning("This build targets Paper 26.2. Current version: "+Bukkit.getMinecraftVersion());
             getLogger().info("Anti-Xray: "+antiXray.status());updates=new AutoUpdateService(this,getFile().toPath());
         }catch(Exception e){getLogger().log(Level.SEVERE,"BlackWikiSMP startup stopped to protect existing data",e);Bukkit.getPluginManager().disablePlugin(this);}
@@ -70,7 +70,7 @@ public final class BlackWikiSMP extends JavaPlugin implements Listener {
         ChatModeration.read(getConfig());ProgressConfig.validate(getConfig());if(cfg().getInt("tree-feller.max-logs",256)<2||cfg().getInt("tree-feller.max-logs",256)>1024||cfg().getInt("tree-feller.blocks-per-tick",8)<1||cfg().getInt("tree-feller.blocks-per-tick",8)>64||cfg().getLong("newbie.duration-seconds",900)<1||cfg().getLong("newbie.duration-seconds",900)>86400||cfg().getLong("graves.owner-lock-seconds",0)<0||cfg().getLong("graves.owner-lock-seconds",0)>86400)throw new IllegalArgumentException("Invalid tree/newbie/grave settings");
         if(getConfig().getLong("market.max-price",1000000000L)<1||getConfig().getLong("market.max-price",1000000000L)>1000000000000L||getConfig().getInt("market.max-listings-per-player",20)<1||getConfig().getInt("market.max-active-listings",2000)<1||getConfig().getInt("market.max-active-listings",2000)>10000||getConfig().getInt("market.completed-history",2000)<0)throw new IllegalArgumentException("Invalid market limits");
         if(getConfig().getInt("teams.max-members",20)<2||getConfig().getInt("teams.max-name-length",12)<1)throw new IllegalArgumentException("Invalid team limits");
-        if(getConfig().getDouble("border.size",40000)!=40000)throw new IllegalArgumentException("BlackWikiSMP 3.3 requires border.size: 40000");
+        if(getConfig().getDouble("border.size",40000)!=40000)throw new IllegalArgumentException("BlackWikiSMP "+Version.V+" requires border.size: 40000");
         if(getConfig().getInt("spawn.radius",500)<16||getConfig().getInt("spawn.radius",500)>2000)throw new IllegalArgumentException("spawn.radius must be 16..2000");
         if(getConfig().getInt("backup.keep",8)<1||getConfig().getInt("backup.keep",8)>100||getConfig().getInt("backup.interval-minutes",60)<1)throw new IllegalArgumentException("Invalid backup policy");
         if(getConfig().getInt("teleport.rtp-max-concurrent",2)<1||getConfig().getInt("teleport.rtp-attempts",16)<1)throw new IllegalArgumentException("Invalid RTP limits");
@@ -119,7 +119,7 @@ public final class BlackWikiSMP extends JavaPlugin implements Listener {
         for(Player a:Bukkit.getOnlinePlayers()){
             titles.sync(a);if(queue.waiting(a))continue;checkBorder(a);if(a.isDead())continue;
 
-            if(heartbeat%5==0&&cfg().getBoolean("settings.tab",true)){a.playerListName(titles.tab(a));a.sendPlayerListHeaderAndFooter(text("BlackWikiSMP 3.3 | 약탈 SMP"),Component.text("접속 "+Bukkit.getOnlinePlayers().size()+" | 게임 "+queue.active()+"/"+queue.slots()+" | 대기 "+queue.size()+" | 핑 "+a.getPing()+"ms"));}
+            if(heartbeat%5==0&&cfg().getBoolean("settings.tab",true)){a.playerListName(titles.tab(a));a.sendPlayerListHeaderAndFooter(text("BlackWikiSMP "+Version.V+" | 약탈 SMP"),Component.text("접속 "+Bukkit.getOnlinePlayers().size()+" | 게임 "+queue.active()+"/"+queue.slots()+" | 대기 "+queue.size()+" | 핑 "+a.getPing()+"ms"));}
         }
         if(heartbeat%Math.max(10,cfg().getInt("settings.persist-seconds",60))==0)data.save(false);
         if(cfg().getBoolean("cleanup.enabled",true)){

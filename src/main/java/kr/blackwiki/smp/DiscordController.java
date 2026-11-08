@@ -71,7 +71,7 @@ public final class DiscordController implements AutoCloseable {
             if(options.apiPort()<1||options.apiPort()>65535||options.control().enabled()&&!options.control().configured())throw new SetupError("관리 ID 또는 로컬 포트를 확인하세요.");
             try(DiscordController controller=new DiscordController(root,settings,options)){
                 Thread hook=new Thread(controller::close,"BlackWikiSMP-controller-shutdown");Runtime.getRuntime().addShutdownHook(hook);
-                controller.start();System.out.println("BlackWikiSMP 3.3 디스코드 도우미 실행 · 게임 서버가 꺼져도 이 창을 유지하세요. 설정 변경 후에는 도우미를 재시작하세요.");
+                controller.start();System.out.println("BlackWikiSMP "+Version.V+" 디스코드 도우미 실행 · 게임 서버가 꺼져도 이 창을 유지하세요. 설정 변경 후에는 도우미를 재시작하세요.");
                 try{new CountDownLatch(1).await();}catch(InterruptedException ex){Thread.currentThread().interrupt();}
                 finally{try{Runtime.getRuntime().removeShutdownHook(hook);}catch(IllegalStateException ignored){}}
             }

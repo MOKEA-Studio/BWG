@@ -44,7 +44,7 @@ final class ServerSupervisor implements PowerCommands.Actions,AutoCloseable {
         try{
             JsonObject s=client.status();if(!target(s)){online=false;state="제어 포트의 다른 서버 응답 감지 · 포트를 확인하세요";return;}boolean ready=s.has("ready")&&s.get("ready").getAsBoolean();misses=0;
             players=s.has("online")?s.get("online").getAsInt():0;queue=s.has("queue")?s.get("queue").getAsInt():0;
-            if(ready){online=true;state="실행 중";if(!observed){observed=true;notice.accept("[서버 시작] BlackWikiSMP 3.3 시작 완료 · 접속 가능");}}
+            if(ready){online=true;state="실행 중";if(!observed){observed=true;notice.accept("[서버 시작] BlackWikiSMP "+Version.V+" 시작 완료 · 접속 가능");}}
             else{online=false;state=stopRequested||DiscordInbound.text(s,"state").equals("stopping")?"저장·종료 중":"시작 중";}
         }catch(Exception ex){
             online=false;misses++;
@@ -73,7 +73,7 @@ final class ServerSupervisor implements PowerCommands.Actions,AutoCloseable {
         return "실행 중인 서버와 연결되지 않았습니다. 강제 종료는 수행하지 않았습니다.";
     }
     private boolean target(JsonObject status){try{return identity.equals(DiscordInbound.text(status,"server_id"))&&status.has("pid")&&(child==null||status.get("pid").getAsLong()==child.pid());}catch(Exception ex){return false;}}
-    @Override public synchronized String status(){return "BlackWikiSMP 3.3 · "+state+(online?" · 접속 "+players+"명 · 대기 "+queue+"명":"");}
+    @Override public synchronized String status(){return "BlackWikiSMP "+Version.V+" · "+state+(online?" · 접속 "+players+"명 · 대기 "+queue+"명":"");}
     synchronized boolean ownedAlive(){return child!=null&&child.isAlive();}
     synchronized boolean online(){return online;}
     @Override public synchronized void close(){closed=true;client.close();/* Leave a running game process intact. */}
