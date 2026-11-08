@@ -1,0 +1,8 @@
+PASS actual 2.8 -> 2.9 server upgrade with one plugin JAR
+PASS real protocol joins and quits each emitted exactly once and in order
+PASS plugin startup and saved shutdown notices emitted exactly once
+PASS unauthorized Discord power request denied
+PASS two Discord-confirmed normal shutdown and restart cycles on real Paper
+PASS controller Gateway stays ready while game process is stopped
+PASS controller lifecycle notices emitted twice each, with no plugin duplicates
+PASS native-tested JAR SHA-256 equals release JAR

@@ -1,0 +1,161 @@
+name: BlackWikiSMP
+version: '3.3'
+main: kr.blackwiki.smp.BlackWikiSMP
+api-version: '26.2'
+author: BlackWiki
+description: Korean raid SMP - GUI, FIFO queue, safe spawn, teams, rankings, border and backups.
+load: POSTWORLD
+softdepend: [voicechat, floodgate, Geyser-Spigot, ViaVersion]
+commands:
+  smptips:
+    aliases: [도움말, 이용도움말]
+    description: 7가지 서버 이용 도움말 GUI
+  smpcoingive:
+    aliases: [코인지급]
+    description: OP 전용 접속 중 플레이어 코인 지급 / 관리 GUI
+  smpcoindebit:
+    aliases: [코인차감]
+    description: OP 전용 접속 중 플레이어 코인 차감 / 관리 GUI
+  smppistol:
+    aliases: [권총, 총기, 탄환, pistol, 리볼버, 샷건, 저격총]
+    description: 리볼버·샷건·저격총 안내 GUI / 재장전
+  smpstarter:
+    aliases: [기본템, kit]
+    description: 계정당 한 번 돌도구 세트와 빵 10개 수령 GUI
+  smpbedrock:
+    aliases: [베드락, 휴대폰, 모바일]
+    description: 베드락 접속 안내 및 공식 연동 상태 GUI
+  smpwelcome:
+    aliases: [환영, 환영보상]
+    description: 신규 유저 첫 접속 10초 인사 보상 안내 GUI
+  smpspawndesign:
+    aliases: [스폰꾸미기, 정원스폰]
+    description: OP 전용 100×100 정원 스폰 GUI / 생성 / 상태
+  smpupgrade:
+    aliases: [업데이트상태]
+    description: OP 전용 자동 설정 업데이트 결과
+  smpgraves:
+    aliases: [무덤, grave, graves]
+    description: 내 사망 무덤 좌표와 회수 GUI
+  smpnewbie:
+    aliases: [신규보호, newbie]
+    description: 신규 보호 시간 / 포기 확인 GUI
+  smptrees:
+    aliases: [벌목, treefeller]
+    description: 개인 일괄 벌목 설정 GUI
+  smpvoice:
+    aliases: [음성채팅, 보이스, voice]
+    description: 한글 음성 메뉴 / 팀 / 나가기 / 음소거 / 해제
+  smpevent:
+    aliases: [이벤트]
+    description: 드롭·PvP 코인 2배 이벤트 GUI
+  smpeventstart:
+    aliases: [관리자전용이벤트켜기]
+    description: OP 전용 /관리자전용이벤트켜기 시간 분 초
+  smpeventstop:
+    aliases: [관리자전용이벤트끄기]
+    description: OP 전용 2배 이벤트 종료
+  smpserum:
+    aliases: [혈청]
+    description: 거인의 혈청 사용 횟수와 영구 체력 GUI
+  smpprogress:
+    aliases: [채광, 채광레벨, 성장]
+    description: 채광 레벨 / 경험치 / 몬스터 보상 GUI
+  smpshop:
+    aliases: [상점, 코인상점]
+    description: 코인 상점 GUI / 구매 / 판매
+  smpmarket:
+    aliases: [유저상점, 경매장, market]
+    description: 손에 든 아이템 판매 등록 / 유저 상품 구매 / 정산
+  smpreset:
+    aliases: [초기화, 야생초기화]
+    description: OP 전용 야생 초기화 / 확인 / 상태
+  smpability:
+    aliases: [상점효과]
+    description: OP 전용 능력 상품 효과 지급
+  blacksmp:
+    aliases: [blackwikismp, smp, 메뉴]
+    description: BlackWikiSMP 메뉴 / 관리 / 도움말
+  spawn:
+    aliases: [스폰, 로비]
+    description: 보호된 스폰으로 이동
+  wilderness:
+    aliases: [야생, rtp]
+    description: 약탈 야생으로 안전한 랜덤 이동
+  worlds:
+    aliases: [월드, 구역]
+    description: 구역 선택 GUI
+  team:
+    aliases: [팀]
+    description: 팀 GUI 및 모든 팀 명령어
+  ranking:
+    aliases: [랭킹, 순위]
+    description: 플레이시간 / 킬 순위 TOP 10
+  queue:
+    aliases: [대기열]
+    description: 대기열 GUI 및 상태
+  smpsettings:
+    aliases: [설정]
+    description: 개인 설정 GUI
+  smpcommands:
+    aliases: [명령어]
+    description: 일반 플레이어용 모든 명령어와 설명 GUI
+  vault:
+    aliases: [보관함, 개인창고]
+    description: 개인 보관함 / 코인으로 칸 확장
+  coins:
+    aliases: [코인]
+    description: 내 코인 잔액 / 코인 랭킹
+  border:
+    aliases: [경계]
+    description: 월드 경계 안내 및 표시
+  backup:
+    aliases: [백업, 자동백업]
+    description: 백업 GUI / 시작 / 자동백업 간격
+  smpnpc:
+    aliases: [npc, 엔피시]
+    description: 안내 NPC 관리 GUI
+  tpa:
+    description: /tpa <플레이어> 이동 요청
+  tpaaccept:
+    aliases: [tpa수락]
+    description: 이동 요청 수락
+  tpadeny:
+    aliases: [tpa거절]
+    description: 이동 요청 거절
+  home:
+    aliases: [홈]
+    description: 최대 5개 개인 홈 GUI / 이동
+  sethome:
+    aliases: [홈설정]
+    description: /sethome [이름] 최대 5개 / 5초 대기
+  trash:
+    aliases: [휴지통]
+    description: 확인을 거쳐 아이템을 버리는 휴지통
+  blocklog:
+    aliases: [로그]
+    description: 블록 설치 / 파괴 / 폭발 기록
+  invsee:
+    aliases: [인벤토리]
+    description: 관리자 읽기 전용 인벤토리
+  smpstatus:
+    aliases: [최적화, 플러그인상태, smp상태]
+    description: OP 전용 플러그인/디스코드/필터/차단/서버 상태
+  smpban:
+    aliases: [벤, 밴]
+    description: OP 전용 기간 차단 / 차단 해제 / 목록
+  smpdiscord:
+    aliases: [디스코드]
+    description: OP 전용 Discord 연결 상태 / 테스트 / 전환
+  smpcleanup:
+    aliases: [청소]
+    description: 바닥 아이템 청소
+permissions:
+  blackwikismp.use:
+    default: true
+  blackwikismp.admin:
+    default: op
+  blackwikismp.queue.bypass:
+    default: op
+  blackwikismp.spawn.build:
+    default: op

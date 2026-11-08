@@ -1,0 +1,36 @@
+package kr.blackwiki.smp;
+
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class Update28Test {
+    @TempDir Path dir;
+    String defaults()throws Exception{try(var in=getClass().getResourceAsStream("/config.yml")){return new String(Objects.requireNonNull(in).readAllBytes(),StandardCharsets.UTF_8);}}
+    @Test void twentySixUpgradesWithoutChangingWalletWorldOrExistingOptions()throws Exception{
+        Path config=dir.resolve("config.yml"),data=dir.resolve("data.yml"),epoch=dir.resolve("upgrade.yml");
+        String old="config-version: 26\nborder:\n  size: 40000\n  center-x: 87\nqueue:\n  player-slots: 73\n  max-waiting: 19\nwelcome:\n  enabled: false\ndiscord:\n  bot-token: unit-test-token-123456789\nworlds:\n  wild: keep-wild\n";
+        Files.writeString(config,old);Files.writeString(data,"coins: 876543\n");Files.writeString(epoch,"grave-expiry-started-at: 1760000000000\n");
+        UpgradeService.migrate(config,defaults());YamlConfiguration y=YamlConfiguration.loadConfiguration(config.toFile());assertEquals(33,y.getInt("config-version"));assertEquals(40000,y.getInt("border.size"));assertEquals(87,y.getInt("border.center-x"));assertEquals(73,y.getInt("queue.player-slots"));assertEquals(19,y.getInt("queue.max-waiting"));assertFalse(y.getBoolean("welcome.enabled"));assertEquals("keep-wild",y.getString("worlds.wild"));assertEquals("unit-test-token-123456789",y.getString("discord.bot-token"));assertTrue(y.getBoolean("starter-kit.enabled"));assertTrue(y.getBoolean("bedrock.enabled"));assertEquals(old,Files.readString(dir.resolve("config.yml.before-3.3.bak")));assertEquals("coins: 876543\n",Files.readString(data));assertEquals("grave-expiry-started-at: 1760000000000\n",Files.readString(epoch));
+        String once=Files.readString(config);assertFalse(UpgradeService.migrate(config,defaults()).changed());assertEquals(once,Files.readString(config));
+    }
+    @Test void legacyBridgeMigrationPreservesKeysLinkingAndAllUnrelatedValues()throws Exception{
+        Path f=dir.resolve("floodgate.yml"),g=dir.resolve("geyser.yml"),key=dir.resolve("key.pem");String original="username-prefix: '*'\nreplace-spaces: false\nkey-file-name: private-key.pem\nplayer-link:\n  enable-global-linking: false\n";Files.writeString(f,original);Files.writeString(g,"config-version: 4\nremote:\n  address: custom-server\n  port: 25577\n  auth-type: online\nbedrock:\n  port: 19142\ncustom: keep\n");Files.writeString(key,"private-test-key");
+        assertTrue(BedrockSetup.prepare(f,g,19142).changed());var fy=YamlConfiguration.loadConfiguration(f.toFile());var gy=YamlConfiguration.loadConfiguration(g.toFile());assertEquals(".",fy.getString("username-prefix"));assertTrue(fy.getBoolean("replace-spaces"));assertEquals("private-key.pem",fy.getString("key-file-name"));assertFalse(fy.getBoolean("player-link.enable-global-linking"));assertEquals("floodgate",gy.getString("remote.auth-type"));assertEquals("custom-server",gy.getString("remote.address"));assertEquals(25577,gy.getInt("remote.port"));assertEquals("keep",gy.getString("custom"));assertEquals("private-test-key",Files.readString(key));assertEquals(original,Files.readString(f.resolveSibling("floodgate.yml.before-blackwikismp-2.8.bak")));String once=Files.readString(g);assertFalse(BedrockSetup.prepare(f,g,19142).changed());assertEquals(once,Files.readString(g));
+    }
+    @Test void modernGeyserUsesJavaAuthSectionAndPreservesNethernetSettings()throws Exception{
+        Path f=dir.resolve("f.yml"),g=dir.resolve("g.yml");Files.writeString(f,"username-prefix: '.'\nreplace-spaces: true\n");Files.writeString(g,"config-version: 5\njava:\n  auth-type: online\nbedrock:\n  port: 19132\n  transport: nethernet\n  signaling:\n    mode: builtin\n");BedrockSetup.prepare(f,g,19133);var y=YamlConfiguration.loadConfiguration(g.toFile());assertEquals("floodgate",y.getString("java.auth-type"));assertFalse(y.contains("remote"));assertEquals(19133,y.getInt("bedrock.port"));assertEquals("nethernet",y.getString("bedrock.transport"));assertEquals("builtin",y.getString("bedrock.signaling.mode"));
+    }
+    @Test void omittedFalseDefaultDoesNotRequestAnUnnecessaryRestart()throws Exception{Path f=dir.resolve("f.yml"),g=dir.resolve("g.yml");Files.writeString(f,"username-prefix: '.'\nreplace-spaces: true\n");Files.writeString(g,"config-version: 12\njava:\n  auth-type: floodgate\nbedrock:\n  port: 19132\n");assertFalse(BedrockSetup.prepare(f,g,19132).changed());assertFalse(YamlConfiguration.loadConfiguration(g.toFile()).contains("bedrock.clone-remote-port"));}
+    @Test void malformedBridgeConfigNeverPartiallyChangesTheOtherFile()throws Exception{Path f=dir.resolve("f.yml"),g=dir.resolve("g.yml");String original="username-prefix: '*'\n";Files.writeString(f,original);Files.writeString(g,"broken: [\n");assertThrows(Exception.class,()->BedrockSetup.prepare(f,g,19132));assertEquals(original,Files.readString(f));assertEquals("broken: [\n",Files.readString(g));assertFalse(Files.exists(dir.resolve("f.yml.before-blackwikismp-2.8.bak")));}
+    @Test void invalidBridgePortsDoNotTouchConfig()throws Exception{Path f=dir.resolve("f.yml"),g=dir.resolve("g.yml");Files.writeString(f,"username-prefix: '.'\n");Files.writeString(g,"config-version: 5\n");for(int port:new int[]{0,-1,65536,Integer.MAX_VALUE})assertThrows(IllegalArgumentException.class,()->BedrockSetup.prepare(f,g,port));assertEquals("config-version: 5\n",Files.readString(g));}
+    @Test void existingBedrockPortCanBeAdoptedInsteadOfResettingIt()throws Exception{Path f=dir.resolve("g.yml");Files.writeString(f,"bedrock:\n  port: 20123\n");assertEquals(20123,BedrockSetup.port(f,19132));Files.writeString(f,"bedrock:\n  port: 0\n");assertEquals(19132,BedrockSetup.port(f,19132));assertEquals(19132,BedrockSetup.port(dir.resolve("missing.yml"),19132));}
+    @Test void publicAddressDoesNotAcceptUrlsWhitespaceOrControlCharacters(){for(String good:List.of("127.0.0.1","play.example.kr","한글.kr","[2001:db8::1]"))assertEquals(good,BedrockSetup.address(" "+good+" "));for(String bad:List.of("","https://example.kr","bad\naddress","name with spaces","a".repeat(254)))assertThrows(IllegalArgumentException.class,()->BedrockSetup.address(bad));}
+    @Test void coinHudAlwaysWorksWithPersonalBorderHudOff(){assertEquals("코인: 0",HudRules.compose(0,"",""));assertEquals("코인: 12,345",HudRules.compose(12345,null,null));}
+    @Test void queueAndTravelAndMiningDoNotReplaceCoins(){String s=HudRules.compose(777,"현재 나의 대기열 숫자: 2","이동·저장까지 5초");assertTrue(s.startsWith("코인: 777"));assertTrue(s.contains("대기열 숫자: 2"));assertTrue(s.contains("이동·저장까지 5초"));assertTrue(HudRules.compose(100,"야생","채광 Lv.3").contains("코인: 100 | 야생 | 채광 Lv.3"));}
+    @Test void hudFormattingIsStableForLargeBalancesAndServerLocale(){Locale old=Locale.getDefault();try{Locale.setDefault(Locale.GERMANY);assertTrue(HudRules.compose(Long.MAX_VALUE,"","").startsWith("코인: 9,223,372,036,854,775,807"));}finally{Locale.setDefault(old);}assertThrows(IllegalArgumentException.class,()->HudRules.compose(-1,"",""));}
+}

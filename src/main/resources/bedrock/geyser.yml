@@ -1,0 +1,12 @@
+# BlackWikiSMP 2.8 신규 설치용 / 공식 Geyser 2.12.1 설정
+config-version: 12
+bedrock:
+  address: 0.0.0.0
+  port: 19132
+  transport: nethernet
+  clone-remote-port: false
+  signaling:
+    mode: builtin
+java:
+  auth-type: floodgate
+default-locale: ko_KR

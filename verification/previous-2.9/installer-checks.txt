@@ -1,0 +1,4 @@
+PASS setup refuses running native world without changing config
+PASS offline setup succeeds with installed Paper libraries
+PASS custom server argv preserved
+PASS private control key preserved

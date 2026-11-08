@@ -1,0 +1,195 @@
+PASS 2.2 loads on real Paper 26.2 / Java 25
+PASS 2.1 config preserves player limits and gains 2.2 defaults
+PASS 2.1 native vault migrates with new mining XP default zero
+PASS first shop page has next navigation
+PASS fourth shop page has previous and no out-of-range next
+PASS special shop page contains all three named magic swords
+PASS magic shop exact purchase price: orius_sword
+PASS shop gives authenticated magic sword: orius_sword
+PASS magic sword metadata survives bank/market byte serialization: orius_sword
+PASS magic shop exact purchase price: demon_sword
+PASS shop gives authenticated magic sword: demon_sword
+PASS magic sword metadata survives bank/market byte serialization: demon_sword
+PASS magic shop exact purchase price: angel_sword
+PASS shop gives authenticated magic sword: angel_sword
+PASS magic sword metadata survives bank/market byte serialization: angel_sword
+PASS renaming a normal sword cannot forge a passive
+PASS equipped weapon applies exact attack damage and speed: ORIUS
+PASS equipped weapon applies exact movement percentage: ORIUS
+PASS requested real unbreaking enchantment: ORIUS
+PASS equipped weapon applies exact attack damage and speed: DEMON
+PASS equipped weapon applies exact movement percentage: DEMON
+PASS requested real unbreaking enchantment: DEMON
+PASS equipped weapon applies exact attack damage and speed: ANGEL
+PASS equipped weapon applies exact movement percentage: ANGEL
+PASS requested real unbreaking enchantment: ANGEL
+PASS magic attributes do not activate from the offhand
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS spawned monster level stays within 1..50
+PASS spawned monster health scales exactly once
+PASS monster nameplate displays level and current/max health
+PASS boss has no level or health scaling: Warden
+PASS boss has no level or health scaling: Wither
+PASS boss has no level or health scaling: EnderDragon
+PASS actual kill reward level 1 strong=false equals 0
+PASS actual kill reward level 25 strong=false equals 0
+PASS actual kill reward level 26 strong=false equals 10
+PASS actual kill reward level 49 strong=false equals 10
+PASS actual kill reward level 50 strong=false equals 35
+PASS actual kill reward level 1 strong=true equals 0
+PASS actual kill reward level 25 strong=true equals 0
+PASS actual kill reward level 26 strong=true equals 30
+PASS actual kill reward level 49 strong=true equals 30
+PASS actual kill reward level 50 strong=true equals 75
+PASS command-spawned monster cannot farm coins
+PASS actual high attack damage also selects strong reward tier
+PASS creative monster kill grants no economy reward
+PASS natural block mining crosses level and awards exactly 30 coins
+PASS same coordinate cannot award mining XP twice
+PASS player-placed ore is not a reusable mining reward
+PASS cancelled mining event grants no XP
+PASS creative mining cannot grant XP
+PASS one rare block crossing five levels pays five times 30 coins
+PASS mining command GUI displays actual progress
+PASS real player death event executes
+PASS Orius enemy kill heals two hearts and grants speed I for three seconds
+PASS real player death event executes
+PASS same-victim repeat kill cannot farm Orius passive
+PASS real player death event executes
+PASS demon kill transfers exactly floor(15 percent) with no coin creation
+PASS demon transfer durably settles both player receipts
+PASS angel real hit roots target and grants wielder resistance II for two seconds
+PASS angel root blocks walking and jumping
+PASS angel twenty-second cooldown blocks another target
+PASS angel root and movement modifier expire after seven ticks
+PASS interrupted debit and credit receipts recover without duplicate deduction or credit
+PASS mining XP and level survive native player save and restart
+PASS previous wallet and vault items survive 2.2 restart
+PASS coin transfer stays settled after full restart
+PASS repeated transfer recovery never duplicates credit
+PASS anti-farm block provenance survives chunk serialization and restart
+PASS angel cooldown timestamp survives reconnect and restart
+PASS temporary angel freeze never persists on reconnect
+PASS living monster keeps the same level after unload and restart
+PASS monster reload never doubles health multiplier
+PASS monster current health ratio survives restart
+PASS public mining command enters the progress GUI
+PASS public shop command enters special sword page four
+PASS OP GUI provides monster and mining settings

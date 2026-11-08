@@ -1,0 +1,98 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/workspace/scratch/c044101f9450/tools/apache-maven-3.9.11/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< kr.blackwiki:BlackWikiSMP >----------------------
+[INFO] Building BlackWikiSMP 3.3
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ BlackWikiSMP ---
+[INFO] Copying 4 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ BlackWikiSMP ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 83 source files with javac [debug release 25] to target/classes
+[WARNING] /workspace/scratch/c044101f9450/project33/src/main/java/kr/blackwiki/smp/ArmorSetService.java:[30,115] TOTEM_RESURRECT in org.bukkit.EntityEffect has been deprecated and marked for removal
+[INFO] /workspace/scratch/c044101f9450/project33/src/main/java/kr/blackwiki/smp/BlackWikiSMP.java: Some input files use or override a deprecated API.
+[INFO] /workspace/scratch/c044101f9450/project33/src/main/java/kr/blackwiki/smp/BlackWikiSMP.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ BlackWikiSMP ---
+[INFO] skip non existing resourceDirectory /workspace/scratch/c044101f9450/project33/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ BlackWikiSMP ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 22 source files with javac [debug release 25] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ BlackWikiSMP ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running kr.blackwiki.smp.MarketJournalTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.156 s -- in kr.blackwiki.smp.MarketJournalTest
+[INFO] Running kr.blackwiki.smp.PistolRulesTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.172 s -- in kr.blackwiki.smp.PistolRulesTest
+[INFO] Running kr.blackwiki.smp.DiscordHttpTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.226 s -- in kr.blackwiki.smp.DiscordHttpTest
+[INFO] Running kr.blackwiki.smp.Update28Test
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.040 s -- in kr.blackwiki.smp.Update28Test
+[INFO] Running kr.blackwiki.smp.GunRulesTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in kr.blackwiki.smp.GunRulesTest
+[INFO] Running kr.blackwiki.smp.ControlApiTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.230 s -- in kr.blackwiki.smp.ControlApiTest
+[INFO] Running kr.blackwiki.smp.Update24Test
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in kr.blackwiki.smp.Update24Test
+[INFO] Running kr.blackwiki.smp.ModerationTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.037 s -- in kr.blackwiki.smp.ModerationTest
+[INFO] Running kr.blackwiki.smp.EconomyTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in kr.blackwiki.smp.EconomyTest
+[INFO] Running kr.blackwiki.smp.GatewaySocketTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s -- in kr.blackwiki.smp.GatewaySocketTest
+[INFO] Running kr.blackwiki.smp.Update33Test
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in kr.blackwiki.smp.Update33Test
+[INFO] Running kr.blackwiki.smp.ControllerSetupTest
+도우미 설정 완료 · 기존 토큰/채널/게임 데이터 유지
+config.yml의 discord.enabled, guild-id, channel-id, control.enabled와 허용 ID를 입력하세요. controller.yml의 server-command를 확인한 뒤 도우미를 실행하세요.
+도우미 설정 완료 · 기존 토큰/채널/게임 데이터 유지
+config.yml의 discord.enabled, guild-id, channel-id, control.enabled와 허용 ID를 입력하세요. controller.yml의 server-command를 확인한 뒤 도우미를 실행하세요.
+도우미 설정 완료 · 기존 토큰/채널/게임 데이터 유지
+config.yml의 discord.enabled, guild-id, channel-id, control.enabled와 허용 ID를 입력하세요. controller.yml의 server-command를 확인한 뒤 도우미를 실행하세요.
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.041 s -- in kr.blackwiki.smp.ControllerSetupTest
+[INFO] Running kr.blackwiki.smp.WorldFilesTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in kr.blackwiki.smp.WorldFilesTest
+[INFO] Running kr.blackwiki.smp.ResetPathsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in kr.blackwiki.smp.ResetPathsTest
+[INFO] Running kr.blackwiki.smp.RulesTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in kr.blackwiki.smp.RulesTest
+[INFO] Running kr.blackwiki.smp.Update26Test
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in kr.blackwiki.smp.Update26Test
+[INFO] Running kr.blackwiki.smp.TransferLedgerTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in kr.blackwiki.smp.TransferLedgerTest
+[INFO] Running kr.blackwiki.smp.Discord29Test
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.298 s -- in kr.blackwiki.smp.Discord29Test
+[INFO] Running kr.blackwiki.smp.ProgressRulesTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in kr.blackwiki.smp.ProgressRulesTest
+[INFO] Running kr.blackwiki.smp.Update25Test
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.192 s -- in kr.blackwiki.smp.Update25Test
+[INFO] Running kr.blackwiki.smp.AdminCoinRulesTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in kr.blackwiki.smp.AdminCoinRulesTest
+[INFO] Running kr.blackwiki.smp.DiscordGatewayTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.363 s -- in kr.blackwiki.smp.DiscordGatewayTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 196, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ BlackWikiSMP ---
+[INFO] Building jar: /workspace/scratch/c044101f9450/project33/target/BlackWikiSMP-3.3.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.563 s
+[INFO] Finished at: 2026-11-07T19:22:07+09:00
+[INFO] ------------------------------------------------------------------------

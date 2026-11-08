@@ -1,0 +1,38 @@
+PASS 2.5 enables on actual Paper 26.2 and Java 25
+PASS 2.4 config automatically migrates to schema twenty-five and bot mode
+PASS existing game and queue capacities remain unchanged
+PASS old webhook is retired and new bot fields are added automatically
+PASS migration preserves exact previous configuration in backup
+PASS 2.4 native vault tier and original stored items survive upgrade
+PASS all five 2.4 homes survive upgrade
+PASS permanent serum health survives upgrade
+PASS existing voice API integration remains enabled
+PASS existing chest fixture contains its original named items before build
+PASS non-OP cannot generate or alter spawn garden
+PASS OP spawn command starts asynchronous chunk preparation
+PASS backup cannot race an unfinished spawn build
+PASS real partially generated spawn is checkpointed before shutdown
+PASS garden is placed in empty sky above original terrain
+PASS incomplete build automatically resumes after restart without clearing files
+PASS existing ground-level chest survives garden generation
+PASS existing chest items retain full original metadata
+PASS all generated garden blocks match the deterministic design
+PASS all generated garden leaves remain persistent
+PASS decorated footprint is exactly one hundred blocks wide
+PASS safe spawn destination moves onto completed plaza
+PASS central menu NPC is durably registered
+PASS central menu NPC right click opens main GUI
+PASS spawn design command opens OP status GUI
+PASS existing Korean command guide remains routed correctly
+PASS invalid bot token is reported without exposing entered value
+PASS invalid bot settings cannot start outgoing HTTP requests
+PASS Discord GUI displays bot-based setup
+PASS completed spawn does not regenerate on future restart
+PASS operator garden edits are retained after restart
+PASS automatic updates retain later operator configuration changes
+PASS original migration backup remains unchanged on repeated boots
+PASS homes vault upgrade and permanent buffs survive the complete upgrade cycle
+PASS menu NPC is restored once without duplication
+PASS expanded plugin status GUI includes upgrade and spawn state
+PASS backup includes spawn and automatic-upgrade journals
+PASS existing grave and event backup records remain included

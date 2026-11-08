@@ -1,0 +1,17 @@
+{
+  "paper": "26.2 build 135",
+  "paper_api": "26.2.build.135-stable",
+  "java": "25.0.5",
+  "voice_runtime": "2.6.25",
+  "plugin_version": "2.4",
+  "jar_sha256": "08cf809399997c37c91f1ca5400318e7199e8fc0974e17513ebad37d37655090",
+  "unit_tests": 61,
+  "native_assertions": 180,
+  "native_unique_labels": 126,
+  "full_suite_assertions": 161,
+  "focused_final_jar_assertions": 19,
+  "actual_server_boots": 6,
+  "tcp_accounts": 4,
+  "installer_smoke": "PASS",
+  "descriptor_names_and_aliases": 101
+}

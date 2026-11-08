@@ -1,0 +1,29 @@
+{
+  "plugin": "2.9",
+  "date_kst": "2026-11-06",
+  "paper": "26.2 build 135",
+  "java": "25.0.5",
+  "jar_sha256": "0b22d88f90bf396dfa554395ae617793b9dcb6cb78aa6e5b09bcd865beb27b67",
+  "baseline_28_sha256": "196476bbfe600d4ccadd4196427ca9f6eab8536c082bbd6d31becf41f3b84b3c",
+  "unit_tests": 137,
+  "unit_failures": 0,
+  "unit_errors": 0,
+  "unit_skipped": 0,
+  "native_assertions": 83,
+  "native_assertion_failures": 0,
+  "native_controller_cycles": 2,
+  "native_installer_checks": 4,
+  "successful_native_boots": 4,
+  "native_boot_versions": [
+    "2.8 baseline",
+    "2.9 plugin Gateway owner",
+    "2.9 controller owner first start",
+    "2.9 controller owner restart"
+  ],
+  "existing_class_files_unchanged": 101,
+  "existing_class_files_total": 112,
+  "final_jar_booted_and_hash_matched": true,
+  "discord_scope": "Production bridge/controller/Gateway state machine with mock Discord HTTP/WebSocket transports; real Paper clients, process start, authenticated loopback API, saved shutdown and persistence. No personal Discord token/account test.",
+  "bedrock_scope": "Existing optional integration preserved; no new authenticated phone login in 2.9 tests. See previous-2.8 for prior bridge tests.",
+  "historical_reports": "previous-* results excluded from current counts"
+}

@@ -1,0 +1,55 @@
+{
+  "plugin": "3.3",
+  "date_kst": "2026-11-07",
+  "paper": "26.2 build 135",
+  "java": "25.0.5",
+  "unit_tests": 196,
+  "unit_failures": 0,
+  "unit_errors": 0,
+  "unit_skipped": 0,
+  "native_assertions": 234,
+  "native_assertion_failures": 0,
+  "successful_boots": [
+    "released 3.2 baseline",
+    "3.3 migration and gameplay",
+    "3.3 restart with active Anti-Xray"
+  ],
+  "additional_startup_attempts": 1,
+  "startup_note": "First restart attempt timed out before plugin activation. The same JAR completed the restarted-server checks on retry.",
+  "offline_controller_setup_checks": 3,
+  "native_jar_equals_release": true,
+  "jar_sha256": "2a6dd0e27af75f14e0793e9c5b9014ce2857ef634c39bed830ba4c206e166612",
+  "baseline_32_sha256": "0faae7f5c9011ff340423cf3b0b49da741a2c6dfb22c8c5379740de800d09a92",
+  "unchanged_existing_class_files": 135,
+  "existing_class_files": 154,
+  "food_bundle_products": 6,
+  "shop_pages": 5,
+  "tips": {
+    "count": 7,
+    "interval_seconds": 300,
+    "random_without_immediate_repeats": true
+  },
+  "anti_xray": {
+    "engine": 3,
+    "per_dimension_profiles": true,
+    "full_height": true,
+    "permission_bypass": false,
+    "native_controller_verified": true,
+    "serialized_chunk_obfuscation_verified": true,
+    "real_ore_unchanged": true,
+    "restart_after_initial_profile_write": true
+  },
+  "grave_cases": [
+    "native death with equipment and offhand",
+    "legacy missing marker repair",
+    "actual inventory clicks and double clicks",
+    "full inventory",
+    "distance check",
+    "hopper block",
+    "all items returned once",
+    "obstructed coordinate with owner recovery at spawn",
+    "exact ten-minute expiry and stale GUI",
+    "actual restart recovery"
+  ],
+  "scope": "Actual Paper and two local protocol clients. Some inputs and test clock use Bukkit API/reflection. Packet test constructs actual Paper chunk packets and compares serialized block data. No external X-ray client, authenticated phone login or personal Discord bot token test."
+}

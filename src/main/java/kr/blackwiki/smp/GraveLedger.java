@@ -1,0 +1,25 @@
+package kr.blackwiki.smp;
+import org.bukkit.configuration.file.YamlConfiguration;
+import java.nio.file.*;
+import java.util.*;
+/** Copy-on-write journal: no memory publication before a synced atomic write succeeds. */
+final class GraveLedger {
+    enum State { PREPARED,OPEN,EMPTY,CANCELLED,EXPIRED }
+    record Grave(UUID id,UUID owner,long created,String world,UUID worldId,int x,int y,int z,boolean virtual,State state,List<String> items,UUID recipient,UUID token,int slot){
+        Grave {Objects.requireNonNull(id);Objects.requireNonNull(owner);Objects.requireNonNull(world);Objects.requireNonNull(worldId);Objects.requireNonNull(state);items=List.copyOf(items);if(items.isEmpty()||items.size()>1024||items.stream().anyMatch(Objects::isNull)||created<0)throw new IllegalArgumentException("Invalid grave data");if((token==null)!=(recipient==null)||token==null&&slot!=-1||token!=null&&((state!=State.OPEN&&state!=State.EXPIRED)||slot<0||slot>=items.size()||items.get(slot).isEmpty()))throw new IllegalArgumentException("Invalid pending grave withdrawal");if(state==State.EMPTY&&items.stream().anyMatch(s->!s.isEmpty()))throw new IllegalArgumentException("Nonempty EMPTY grave");if(state==State.EXPIRED)for(int i=0;i<items.size();i++)if(i!=slot&&!items.get(i).isEmpty())throw new IllegalArgumentException("Nonempty expired grave");}
+        Grave state(State next){return new Grave(id,owner,created,world,worldId,x,y,z,virtual,next,items,null,null,-1);}
+        Grave physical(boolean value){return new Grave(id,owner,created,world,worldId,x,y,z,value,state,items,recipient,token,slot);}
+        Grave reserve(UUID who,UUID receipt,int index){if(state!=State.OPEN||token!=null||index<0||index>=items.size()||items.get(index).isEmpty())throw new IllegalStateException("Grave item unavailable");return new Grave(id,owner,created,world,worldId,x,y,z,virtual,state,items,Objects.requireNonNull(who),Objects.requireNonNull(receipt),index);}
+        Grave expire(){List<String> next=new ArrayList<>(Collections.nCopies(items.size(),""));if(token!=null)next.set(slot,items.get(slot));return new Grave(id,owner,created,world,worldId,x,y,z,virtual,State.EXPIRED,next,recipient,token,slot);}
+        Grave settle(boolean delivered){if(token==null)throw new IllegalStateException("No pending grave item");List<String> next=new ArrayList<>(items);if(delivered||state==State.EXPIRED)next.set(slot,"");return new Grave(id,owner,created,world,worldId,x,y,z,virtual,state==State.EXPIRED?State.EXPIRED:next.stream().allMatch(String::isEmpty)?State.EMPTY:State.OPEN,next,null,null,-1);}
+    }
+    private final Path file;private Map<UUID,Grave> entries=new LinkedHashMap<>();private long revision;
+    GraveLedger(Path file)throws Exception{this.file=file;if(!Files.exists(file))return;YamlConfiguration y=new YamlConfiguration();y.load(file.toFile());if(y.getInt("schema")!=1)throw new IllegalArgumentException("Unsupported graves schema");var section=y.getConfigurationSection("graves");if(section!=null)for(String id:section.getKeys(false)){String k="graves."+id+".";String recipient=y.getString(k+"recipient"),token=y.getString(k+"token");Grave g=new Grave(UUID.fromString(id),UUID.fromString(Objects.requireNonNull(y.getString(k+"owner"))),y.getLong(k+"created"),Objects.requireNonNull(y.getString(k+"world")),UUID.fromString(Objects.requireNonNull(y.getString(k+"world-id"))),y.getInt(k+"x"),y.getInt(k+"y"),y.getInt(k+"z"),y.getBoolean(k+"virtual"),State.valueOf(y.getString(k+"state")),y.getStringList(k+"items"),recipient==null?null:UUID.fromString(recipient),token==null?null:UUID.fromString(token),y.getInt(k+"slot",-1));entries.put(g.id,g);}}
+    long revision(){return revision;}
+    Grave get(UUID id){return entries.get(id);}
+    Collection<Grave> all(){return List.copyOf(entries.values());}
+    void put(Grave grave)throws Exception{putAll(List.of(grave));}
+    void putAll(Collection<Grave> graves)throws Exception{Map<UUID,Grave> next=new LinkedHashMap<>(entries);for(Grave grave:graves)next.put(grave.id,grave);write(next);entries=next;revision++;}
+    void compact()throws Exception{List<Grave> closed=entries.values().stream().filter(g->g.token==null&&(g.state==State.EMPTY||g.state==State.CANCELLED||g.state==State.EXPIRED)).toList();if(closed.size()<=2000)return;Map<UUID,Grave> next=new LinkedHashMap<>(entries);for(int i=0;i<closed.size()-2000;i++)next.remove(closed.get(i).id);write(next);entries=next;revision++;}
+    private void write(Map<UUID,Grave> data)throws Exception{YamlConfiguration y=new YamlConfiguration();y.set("schema",1);for(Grave g:data.values()){String k="graves."+g.id+".";y.set(k+"owner",g.owner.toString());y.set(k+"created",g.created);y.set(k+"world",g.world);y.set(k+"world-id",g.worldId.toString());y.set(k+"x",g.x);y.set(k+"y",g.y);y.set(k+"z",g.z);y.set(k+"virtual",g.virtual);y.set(k+"state",g.state.name());y.set(k+"items",g.items);if(g.token!=null){y.set(k+"recipient",g.recipient.toString());y.set(k+"token",g.token.toString());}y.set(k+"slot",g.slot);}DataStore.atomic(file,y.saveToString());}
+}

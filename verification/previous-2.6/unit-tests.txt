@@ -1,0 +1,13 @@
+kr.blackwiki.smp.DiscordHttpTest: 1 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.EconomyTest: 4 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.MarketJournalTest: 5 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.ModerationTest: 18 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.ProgressRulesTest: 8 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.ResetPathsTest: 2 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.RulesTest: 9 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.TransferLedgerTest: 2 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.Update24Test: 10 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.Update25Test: 10 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.Update26Test: 10 tests; 0 failures; 0 errors; 0 skipped
+kr.blackwiki.smp.WorldFilesTest: 2 tests; 0 failures; 0 errors; 0 skipped
+TOTAL {"tests": 81, "failures": 0, "errors": 0, "skipped": 0}

@@ -1,0 +1,21 @@
+package kr.blackwiki.smp;
+import org.bukkit.Material;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import java.nio.file.*;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+class Update24Test {
+    @TempDir Path folder;
+    @Test void pricesAndSets(){assertEquals(56,ShopCatalogue.ALL.size());assertEquals(499900,ShopCatalogue.find("guardian_set").buy());assertEquals(999900,ShopCatalogue.find("phoenix_set").buy());assertEquals(20000,ShopCatalogue.find("executioner_sword").buy());assertEquals(50000,ShopCatalogue.find("immortal_set").buy());assertEquals(75000,ShopCatalogue.find("giant_serum").buy());for(String id:List.of("guardian_set","phoenix_set","immortal_set")){var product=ShopCatalogue.find(id);assertTrue(product.armor());assertEquals(4,product.materials().size());assertThrows(IllegalArgumentException.class,()->product.total(false,2));}assertEquals(Material.NETHERITE_CHESTPLATE,ShopCatalogue.find("immortal_set").icon());}
+    @Test void eventDurationBounds(){assertEquals(3661,EventRules.seconds("1","1","1"));assertEquals(604800,EventRules.seconds("168","0","0"));for(String[] bad:List.of(new String[]{"0","0","0"},new String[]{"168","0","1"},new String[]{"0","60","0"},new String[]{"-1","0","1"},new String[]{"0","0","60"},new String[]{"999999999999999999999","0","0"}))assertThrows(IllegalArgumentException.class,()->EventRules.seconds(bad[0],bad[1],bad[2]));}
+    @Test void pvpRewardsExactlyDouble(){for(int i=0;i<3;i++){assertTrue(Set.of(40L,80L,100L).contains(EventRules.reward(i,false)));assertEquals(EventRules.reward(i,false)*2,EventRules.reward(i,true));}assertThrows(IllegalArgumentException.class,()->EventRules.reward(3,false));}
+    @Test void executionerThreshold(){assertTrue(ExecutionerService.threshold(10,20));assertTrue(ExecutionerService.threshold(20,20));assertFalse(ExecutionerService.threshold(9.999,20));assertFalse(ExecutionerService.threshold(0,0));assertTrue(ExecutionerService.threshold(13,26));}
+    @Test void guardianProbability(){assertTrue(ArmorSetService.proc(0));assertTrue(ArmorSetService.proc(.149999));assertFalse(ArmorSetService.proc(.15));assertFalse(ArmorSetService.proc(1));assertFalse(ArmorSetService.proc(-1));}
+    @Test void homeNamesCannotChangeYamlPaths(){assertEquals("한글_base-1",HomeRules.name(" 한글_BASE-1 "));assertEquals(5,HomeRules.MAX);for(String name:List.of("","a.b","a/b","../홈","one two","12345678901234567","a:b"))assertThrows(IllegalArgumentException.class,()->HomeRules.name(name));}
+    @Test void naturalTreeFamilies(){assertEquals("OAK",TreeFellerService.family(Material.OAK_LOG));assertEquals("DARK_OAK",TreeFellerService.family(Material.DARK_OAK_WOOD));assertEquals("",TreeFellerService.family(Material.STRIPPED_OAK_LOG));assertEquals("",TreeFellerService.family(Material.OAK_PLANKS));assertEquals("",TreeFellerService.family(Material.CRIMSON_STEM));}
+    GraveLedger.Grave grave(){return new GraveLedger.Grave(UUID.randomUUID(),UUID.randomUUID(),1,"wild",UUID.randomUUID(),1,64,1,true,GraveLedger.State.OPEN,List.of("first","second"),null,null,-1);}
+    @Test void reservedGraveSurvivesAndSettlesOnce()throws Exception{Path file=folder.resolve("graves.yml");var ledger=new GraveLedger(file);var g=grave();UUID token=UUID.randomUUID(),receiver=UUID.randomUUID();ledger.put(g.reserve(receiver,token,0));g=new GraveLedger(file).get(g.id());assertEquals(token,g.token());assertEquals(receiver,g.recipient());assertEquals(List.of("","second"),g.settle(true).items());var settled=g.settle(true);assertThrows(IllegalStateException.class,()->settled.reserve(receiver,token,0));assertEquals(List.of("first","second"),g.settle(false).items());}
+    @Test void emptyAndPendingSchemasFailClosed(){var g=grave();assertThrows(IllegalArgumentException.class,()->g.state(GraveLedger.State.EMPTY));assertThrows(IllegalArgumentException.class,()->new GraveLedger.Grave(g.id(),g.owner(),1,"wild",g.worldId(),1,64,1,true,GraveLedger.State.OPEN,g.items(),null,UUID.randomUUID(),0));}
+    @Test void corruptJournalDoesNotOverwriteOriginal()throws Exception{Path file=folder.resolve("graves.yml");String corrupt="schema: 999\ngraves: {}\n";Files.writeString(file,corrupt);assertThrows(IllegalArgumentException.class,()->new GraveLedger(file));assertEquals(corrupt,Files.readString(file));}
+}

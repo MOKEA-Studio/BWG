@@ -1,0 +1,12 @@
+kr.blackwiki.smp.DiscordHttpTest: 1 passed
+kr.blackwiki.smp.EconomyTest: 4 passed
+kr.blackwiki.smp.MarketJournalTest: 5 passed
+kr.blackwiki.smp.ModerationTest: 18 passed
+kr.blackwiki.smp.ProgressRulesTest: 8 passed
+kr.blackwiki.smp.ResetPathsTest: 2 passed
+kr.blackwiki.smp.RulesTest: 9 passed
+kr.blackwiki.smp.TransferLedgerTest: 2 passed
+kr.blackwiki.smp.Update24Test: 10 passed
+kr.blackwiki.smp.Update25Test: 10 passed
+kr.blackwiki.smp.WorldFilesTest: 2 passed
+TOTAL 71 passed, failures=0, errors=0, skipped=0

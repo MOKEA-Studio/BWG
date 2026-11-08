@@ -1,0 +1,62 @@
+PASS attached 2.6 JAR boots as genuine upgrade baseline
+PASS old garden fully generated before upgrade
+PASS 2.8 JAR starts normally on Paper 26.2 / Java 25
+PASS automatic 26 to 28 migration preserves player and queue slots
+PASS 40k wilderness border retained
+PASS native wallet and vault tier retained
+PASS vault item payload preserved
+PASS ordinary native inventory preserved
+PASS five homes retained
+PASS old grave expiry epoch not reset by 2.8 upgrade
+PASS customized garden block retained
+PASS garden journal unchanged
+PASS Geyser Floodgate and ViaVersion detected as active
+PASS Java player is not falsely treated as authenticated Bedrock
+PASS Floodgate API initialized
+PASS live Floodgate username prefix is a dot
+PASS real Geyser runtime enabled
+PASS live Geyser uses Floodgate authentication
+PASS ViaVersion has a protocol path from Geyser Java protocol to Paper 26.2
+PASS NetherNet UDP listener active
+PASS full inventory neither grants kit nor consumes one-time receipt
+PASS failed kit leaves every existing stack unchanged
+PASS backup lock delays kit without consuming receipt
+PASS queued player cannot claim kit
+PASS combat prevents kit claim without consuming it
+PASS starter command opens preview without granting items
+PASS GUI claim grants ten bread and records receipt
+PASS kit contains exactly one STONE_SWORD
+PASS kit contains exactly one STONE_PICKAXE
+PASS kit contains exactly one STONE_AXE
+PASS kit contains exactly one STONE_SHOVEL
+PASS kit contains exactly one STONE_HOE
+PASS repeat kit claim is rejected without duplicate items
+PASS direct command fills five tool slots and merges bread atomically
+PASS one-time receipt is in the same native player PDC
+PASS armor purchase charges exactly 500 for leather_set
+PASS coin action bar immediately reflects leather_set purchase
+PASS armor purchase charges exactly 1500 for iron_set
+PASS coin action bar immediately reflects iron_set purchase
+PASS armor purchase charges exactly 3500 for diamond_set
+PASS coin action bar immediately reflects diamond_set purchase
+PASS armor purchase charges exactly 15000 for netherite_set
+PASS coin action bar immediately reflects netherite_set purchase
+PASS armor transactions grant complete wearable sets
+PASS coin HUD stays visible when border HUD is off
+PASS mining notice and current coins share one action bar
+PASS queue position and coins remain visible together
+PASS expanded operator status GUI handles more than 27 lines
+PASS mobile connection guide opens in Korean
+PASS existing command guide remains accessible
+PASS teleport warmup and coins share action bar
+PASS 2.6 newcomer greeting reward retained in 2.8
+PASS welcome reward updates coin action bar immediately
+PASS 2.8 starts with optional bridge plugins absent
+PASS missing bridge is reported without disabling Java SMP
+PASS both native kit receipts survive actual server restart
+PASS restart cannot reissue already-claimed starter kit
+PASS new economy balance survives restart
+PASS grave epoch remains unchanged after another restart
+PASS homes remain after final restart
+PASS coin action bar resumes after restart with border HUD disabled
+PASS 2.6 ten-minute grave expiry still operates in 2.8

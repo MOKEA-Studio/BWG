@@ -1,0 +1,222 @@
+# BlackWikiSMP 2.8 / Paper 26.2 / Java 25
+# 서버를 종료한 상태에서 수정하거나 /smp reload 를 사용하세요.
+# Anti-Xray는 /smp antixray 적용 후 서버 전체 재시작이 필요합니다.
+worlds:
+  # 빈 값: 기존 첫 번째 일반 월드. 기존 월드를 지우거나 초기화하지 않습니다.
+  spawn: ''
+  wild: BlackWikiSMPWild
+  queue: BlackWikiSMPQueue
+spawn:
+  radius: 500
+  # null: 해당 월드의 기존 스폰 좌표
+  location: null
+  protect-mobs: true
+npcs:
+  # 최초 설치 때 지형을 수정하지 않고 스폰 주위에 안내 주민 8명을 배치합니다.
+  auto-create-guides: true
+queue:
+  enabled: true
+  # 서버에서 실제로 게임하는 최대 인원 수(1~1000).
+  # 접속 정원은 player-slots + max-waiting 으로 자동 조정합니다.
+  # 낮춰도 이미 접속한 플레이어를 강제로 내보내지 않습니다.
+  player-slots: 50
+  # 대기열에서 기다릴 최대 인원 수(0~10000). 0이면 추가 대기 불가.
+  max-waiting: 30
+  platform-y: 100
+teams:
+  max-members: 20
+  max-name-length: 12
+  invite-seconds: 60
+  default-friendly-fire: false
+combat:
+  tag-seconds: 30
+  logout-death: true
+  same-victim-kill-cooldown-seconds: 300
+teleport:
+  warmup-seconds: 5
+  rtp-cooldown-seconds: 60
+  rtp-min-radius: 600
+  rtp-max-radius: 9000
+  rtp-attempts: 16
+  rtp-max-concurrent: 2
+  request-seconds: 60
+border:
+  size: 40000
+  center-x: 0
+  center-z: 0
+  warning-distance: 100
+  # 모든 생존 차원에 적용(대기열 월드는 제외).
+  all-survival-worlds: true
+  kill-outside: true
+backup:
+  enabled: true
+  interval-minutes: 60
+  keep: 8
+  # 빈 값이면 서버 폴더/backups/BlackWikiSMP
+  directory: ''
+  # 월드 백업에는 playerdata / dimensions도 포함됩니다.
+  include-worlds: true
+cleanup:
+  enabled: true
+  interval-seconds: 180
+  warning-seconds: 30
+  minimum-item-age-seconds: 60
+audit:
+  enabled: true
+  max-file-mb: 16
+  files-to-keep: 5
+settings:
+  default-border-hud: true
+  default-tpa: true
+  default-notifications: true
+  tab: true
+  chat-cooldown-ms: 1000
+  persist-seconds: 60
+
+# 설정 버전은 자동 관리됩니다. 데이터 폴더를 삭제하지 마세요.
+config-version: 33
+# Minecraft → Discord 봇 계정으로 채팅/명령/관리 기록을 전송합니다.
+# Discord Developer Portal의 Bot Token과 전송할 텍스트 채널 ID를 입력합니다.
+discord:
+  enabled: false
+  mode: bot
+  # plugin: 서버 안에서 수신 / controller: 별도 상시 실행 도우미가 수신
+  gateway-owner: plugin
+  guild-id: ''
+  relay-discord-chat: true
+  relay-player-events: true
+  relay-server-events: true
+  # 토큰은 채팅/명령어에 입력하지 말고 이 파일 또는 환경 변수에만 입력하세요.
+  bot-token: ''
+  bot-token-env: BLACKWIKISMP_DISCORD_BOT_TOKEN
+  channel-id: ''
+  relay-chat: true
+  relay-commands: true
+  relay-moderation: true
+  include-command-arguments: false
+  redact-command-arguments: [login, register, changepassword, auth, msg, tell, w, whisper, team, 팀, smpdiscord, 디스코드]
+  max-pending-messages: 500
+  flush-interval-ms: 1000
+  control:
+    enabled: false
+    channel-id: ''
+    allowed-user-ids: []
+    allowed-role-ids: []
+    confirmation-seconds: 30
+    # 로컬 전용 포트. 게임/음성 포트와 다르게 설정하세요. 외부 공개 불필요.
+    api-port: 28919
+
+chat-filter:
+  enabled: true
+  # mask: 욕설 부분만 *로 가림. block: 메시지 전체 전송 취소.
+  mode: mask
+  # 미친/존나는 코드에서도 항상 허용합니다.
+  allowed-words: [미친, 존나, 시발점, 시발역, 시발차]
+  # 단어를 추가/삭제한 뒤 /smp reload. 띄어쓰기/일부 기호/제로폭 문자 우회도 정규화.
+  blocked-words: [씨발, 시발, 씨팔, 시팔, 씨벌, ㅅㅂ, ㅆㅂ, 개새끼, 새끼, 병신, ㅂㅅ, 지랄, 좆, 씹, 닥쳐, 꺼져, fuck, fucking, shit, shitty, bitch, bitches, asshole]
+
+moderation:
+  max-ban-days: 3650
+
+# 코인: 게임 입장 중 실제 경과 2초마다 1코인. 대기·오프라인 제외.
+# 상점 가격표는 요청한 고정 가격을 사용합니다. 능력은 레벨 I입니다.
+market:
+  # 가격은 손에 든 묶음 전체 기준. 판매 수수료는 없습니다.
+  max-price: 1000000000
+  max-listings-per-player: 20
+  max-active-listings: 2000
+  # 종료된 거래 기록 보관 개수. 진행 중인 거래는 정리하지 않습니다.
+  completed-history: 2000
+
+# 2.2 몬스터: 최대 레벨은 50으로 고정. 엔더 드래곤·워든·위더는 항상 제외.
+monsters:
+  enabled: true
+  # 각 레벨의 가중치 = spawn-decay^(레벨-1). 0보다 크고 1보다 작아야 합니다.
+  spawn-decay: 0.94
+  # 원래 최대 체력 × (1 + (레벨-1) × 보너스). 공격력은 바닐라 그대로.
+  health-bonus-per-level: 0.04
+  # 강한 몬스터: Lv26~49=30코인, Lv50=75코인. 그 외는 10/35코인.
+  # 생존·모험 플레이어가 직접 처치해야 하며 알·명령·플러그인 소환은 보상 제외.
+  strong-attack-damage: 6.0
+  strong-types: [RAVAGER, PIGLIN_BRUTE, VINDICATOR, EVOKER, HOGLIN, ZOGLIN, ELDER_GUARDIAN, BREEZE, CREAKING]
+
+mining:
+  enabled: true
+  # 몬스터의 50레벨 제한과 별개인 채광 최고 레벨입니다.
+  max-level: 100
+  # 다음 레벨 필요 XP = base-xp + (현재레벨-1) × xp-growth
+  base-xp: 100
+  xp-growth: 50
+  block-xp: 1
+  ore-xp: 5
+  # 다이아몬드 광석 / 심층암 다이아몬드 광석 / 고대 잔해
+  rare-ore-xp: 10
+  # 레벨 상승 보상은 30코인 고정. 설치·재생성·반복 채굴 위치는 XP 제외.
+
+# 2.3/2.4: /smp features 에서 활성화 조정 가능
+tree-feller:
+  enabled: true
+  max-logs: 256
+  blocks-per-tick: 8
+graves:
+  # 생성 10분 후 남은 아이템까지 소멸합니다. 기존 무덤은 첫 2.6 실행 후 10분.
+  enabled: true
+  # 0: 다른 유저도 현장 약탈 가능. 복구 무덤은 소유자만 스폰에서 회수.
+  owner-lock-seconds: 0
+newbie:
+  enabled: true
+  # 대기열·오프라인 제외 실제 게임 시간
+  duration-seconds: 900
+voice:
+  enabled: true
+  # 실제 전송: 별도 공식 Simple Voice Chat 2.6.25 + 클라이언트 모드 + UDP 포트
+# 이벤트 기간은 event.yml 에 종료 시각으로 저장됩니다.
+# 몬스터 전리품 수량만 2배. 사망 무덤·블록·경험치·몬스터 코인 제외.
+# PvP 보상은 평소 40/80/100, 이벤트 중 80/160/200 코인입니다.
+
+# 100×100 정원 스폰: 기존 지형 위 빈 공간에 한 번 생성하고 유지합니다.
+spawn-design:
+  auto-create: true
+  blocks-per-tick: 1200
+
+# 첫 접속자의 등장 후 10초 동안, 안녕하세요 인사 시 각 유저에게 100코인.
+# 신규 유저당 1회 · 본인 제외 · 재접속/중복 인사 제외.
+welcome:
+  enabled: true
+
+# 2.8: /기본템 GUI 또는 /기본템 받기. 계정 UUID별 1회 기록을 저장합니다.
+starter-kit:
+  enabled: true
+
+# 실제 베드락 접속에는 공식 Geyser + Floodgate + ViaVersion이 필요합니다.
+# 포함된 설치 꾸러미가 세 플러그인을 제공하며 기존 설정/데이터는 유지합니다.
+bedrock:
+  enabled: true
+  auto-configure: true
+  port: 19132
+  # 휴대폰에서 접속할 공인 IP 또는 도메인. 자동 추측하지 않습니다.
+  public-address: ''
+
+# 3.2 총기 3종 (발사·재장전 모두 야생 월드 전용): 발사마다 1발, 재장전 완료 때 추가 1발 소비.
+# 리볼버: 탄창 6 / 피해 6 / 재장전 40틱 / 내구 250.
+# 샷건: 탄창 2 / 산탄 5개 합계 피해 24(♥12) / 재장전 30틱 / 내구 1561.
+# 저격총: 탄창 1 / 일반 피해 10(♥5) / 재장전 50틱 / 내구 1561.
+# /총기에서 OP가 전체 총기 사용을 켜고 끌 수 있습니다.
+pistol:
+  enabled: true
+
+# 3.3: 7가지 안내 중 하나를 5분마다 채팅으로 전송합니다. /도움말
+help-tips:
+  enabled: true
+
+# Paper Anti-Xray 강화를 자동 구성합니다. 첫 적용 후 전체 재시작이 한 번 필요합니다.
+anti-xray:
+  auto-configure: true
+
+# GitHub 릴리스 자동 업데이트. 새 릴리스의 BlackWikiSMP*.jar를 plugins/update에 받아 두고
+# 다음 서버 재시작 때 Paper가 교체합니다. 공개 저장소만 지원합니다.
+auto-update:
+  enabled: true
+  # 공개 저장소 owner/repo. 비워 두면 확인하지 않습니다.
+  repository: 'MOKEA-Studio/BWG'
+  check-interval-minutes: 30

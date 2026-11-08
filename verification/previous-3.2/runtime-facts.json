@@ -1,0 +1,50 @@
+{
+  "plugin": "3.2",
+  "date_kst": "2026-11-07",
+  "paper": "26.2 build 135",
+  "java": "25.0.5",
+  "unit_tests": 180,
+  "unit_failures": 0,
+  "unit_errors": 0,
+  "unit_skipped": 0,
+  "native_assertions": 176,
+  "native_failures": 0,
+  "native_boots": [
+    "3.1 development baseline",
+    "3.2 upgrade and firearm/admin-coin gameplay",
+    "3.2 restart and persistent data"
+  ],
+  "offline_controller_setup_checks": 3,
+  "native_jar_equals_release": true,
+  "release_jar_sha256": "0faae7f5c9011ff340423cf3b0b49da741a2c6dfb22c8c5379740de800d09a92",
+  "baseline_31_sha256": "ebda6c4f7fc32af7de07f445f712425a03e03f9b093c738ae017f65287d37a16",
+  "unchanged_existing_class_files": 137,
+  "existing_class_files": 152,
+  "weapons": {
+    "revolver": {
+      "base_damage": 6,
+      "capacity": 6,
+      "reload_ticks": 40,
+      "durability": 250
+    },
+    "shotgun": {
+      "pellets": 5,
+      "total_base_damage": 24,
+      "capacity": 2,
+      "reload_ticks": 30,
+      "durability": 1561
+    },
+    "sniper": {
+      "base_damage": 10,
+      "capacity": 1,
+      "reload_ticks": 50,
+      "durability": 1561
+    }
+  },
+  "ordinary_damage_for_all_weapons": true,
+  "weapon_use_world": "configured wilderness world only, firing and reload",
+  "ammo_per_shot": 1,
+  "additional_ammo_per_reload": 1,
+  "admin_coin_targets": "online exact-name players; OP players or console/RCON",
+  "scope": "Actual Paper, two local protocol clients, native items/Q/physics/restart. Some GUI and command inputs use API/reflection. No new authenticated phone login or personal Discord bot token test."
+}

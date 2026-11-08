@@ -1,0 +1,176 @@
+PASS 3.1 development build baseline enabled
+PASS 3.1 starter receipts seeded
+PASS garden generation complete on 3.1
+PASS baseline custom garden block placed
+PASS 3.2 enabled on real Paper 26.2 / Java 25
+PASS 31 to 32 migration preserves capacity settings
+PASS vault tier retained
+PASS vault items retained
+PASS ordinary inventory retained
+PASS five homes retained
+PASS one-time kit receipts retained
+PASS grave expiry epoch not reset
+PASS 40000 world border retained
+PASS custom garden block retained: GOLD_BLOCK
+PASS garden journal unchanged
+PASS Discord token setting retained without enabling actual network test
+PASS existing 3.1 gun UUID and magazine survive migration
+PASS 3.1 revolver retains iron-sword durability
+PASS 3.1 ammunition remains valid
+PASS 3.1 shotgun UUID, magazine and durability migrate to 3.2
+PASS 3.1 sniper UUID, magazine and durability migrate to 3.2
+PASS native wallet preserved from 3.1
+PASS non-OP player cannot grant coins
+PASS admin permission alone does not bypass OP-only coin restriction
+PASS OP Korean grant command adds exact amount
+PASS admin grant immediately refreshes target coin HUD
+PASS OP Korean debit command subtracts exact amount
+PASS invalid admin amount rejected: -1
+PASS invalid admin amount rejected: 0
+PASS invalid admin amount rejected: 1.5
+PASS invalid admin amount rejected: 9223372036854775808
+PASS overdraft admin debit rejected without clamping
+PASS unknown/offline name does not modify an account
+PASS grant overflow never wraps wallet negative
+PASS console can administer coins
+PASS no-argument admin command opens target GUI
+PASS double GUI confirmation applies admin grant once
+PASS revoking OP before GUI confirmation prevents grant
+PASS new pistol setting added automatically
+PASS pistol command opens Korean GUI
+PASS special shop remains page four
+PASS GUI-confirmed pistol purchase costs exactly 100000
+PASS purchased gun has genuine persistent identity
+PASS new pistol starts unloaded
+PASS single ammo purchase succeeds
+PASS single round costs 500 and gives one round
+PASS six-pack purchase succeeds
+PASS six pack costs 2500 and gives six rounds
+PASS full bag does not charge for failed weapon purchase
+PASS anvil-style copied gun name grants no weapon powers
+PASS renamed ordinary iron nuggets never count as ammo
+PASS spawn blocks shooting without consuming ammo
+PASS spawn blocks reload without an ammo fee
+PASS wild world allows pistol reload
+PASS reload has no immediate charge or instant refill
+PASS reload does not complete before 40 ticks
+PASS 2-second reload fills six and charges one extra round
+PASS coin and magazine HUD remain visible together
+PASS right-click event fires and consumes one magazine allowance and one reserve round
+PASS same-tick fire spam cannot duplicate or spend extra shots
+PASS real moving projectile deals exactly six raw damage
+PASS remaining magazine shot 2 fires
+PASS remaining magazine shot 3 fires
+PASS remaining magazine shot 4 fires
+PASS remaining magazine shot 5 fires
+PASS remaining magazine shot 6 fires
+PASS six shots after initial reload use exactly seven total rounds
+PASS no-ammo reload cannot refill
+PASS empty magazine starts automatic reload after last shot
+PASS automatic reload consumes its extra round only once
+PASS native Q/drop is cancelled for pistol
+PASS Q restores same held weapon and starts reload
+PASS switching slots cancels reload with no fee and no refill
+PASS offhand rounds included in reserve count
+PASS offhand-only ammo can pay reload
+PASS completed reload consumes exactly one offhand round
+PASS right click holding offhand ammo reloads instead of firing
+PASS cancelled ProjectileLaunchEvent prevents firing
+PASS cancelled launch does not charge magazine or reserve
+PASS anvil output blocked for genuine gun
+PASS anvil output blocked for genuine ammo
+PASS custom rounds cannot be converted by crafting
+PASS ordinary iron nugget crafting remains functional
+PASS newbie-target test projectile fires
+PASS newbie protection blocks pistol PvP
+PASS friendly-fire test projectile fires
+PASS team PvP off blocks pistol damage
+PASS PvP-enabled projectile fires
+PASS team PvP on allows six damage
+PASS pistol damage tags both players in combat
+PASS external damage-cancel test fires
+PASS other plugins can cancel pistol damage normally
+PASS pistol blocked in spawn world even outside protected radius
+PASS pistol cannot reload outside wilderness
+PASS shotgun GUI confirmation costs 250000
+PASS shotgun shop item carries its own PDC type
+PASS three shotgun shells purchased
+PASS shotgun shells cost 1500 per round
+PASS sniper shop purchase succeeds
+PASS sniper costs 200000
+PASS sniper purchase is an authenticated weapon
+PASS discounted sniper pack gives twelve rounds for 4000
+PASS single sniper round costs 400
+PASS renaming raw material cannot forge SHOTGUN ammo
+PASS SHOTGUN ammo never feeds revolver
+PASS renaming raw material cannot forge SNIPER ammo
+PASS SNIPER ammo never feeds revolver
+PASS shotgun spawn fire denied without consumption
+PASS native Q prevents dropping shotgun
+PASS Q starts delayed shotgun reload without instant fee
+PASS shotgun not reloaded before 1.5 seconds
+PASS shotgun Q reload fills two, charges one and preserves durability
+PASS shotgun round 1 fires
+PASS one shotgun trigger launches five real snowballs
+PASS shotgun trigger charges one shell and one durability, not five
+PASS shotgun rapid same-tick duplicate is denied
+PASS five close pellets total 24 damage (twelve hearts), round 1
+PASS shotgun round 2 fires
+PASS one shotgun trigger launches five real snowballs
+PASS shotgun trigger charges one shell and one durability, not five
+PASS shotgun rapid same-tick duplicate is denied
+PASS five close pellets total 24 damage (twelve hearts), round 2
+PASS reload plus two shotgun shots uses exactly three shells
+PASS wrong-type reserves cannot fire shotgun
+PASS sniper and pistol ammo cannot reload empty shotgun
+PASS third-party cancellation of third pellet aborts entire volley
+PASS partial launch cancellation leaves no bullet, fee or wear
+PASS last shotgun durability permits one final shot
+PASS 1561st shotgun use breaks gun and cannot auto-reload a missing item
+PASS native Q prevents dropping sniper
+PASS sniper Q begins reload without instant ammo fee
+PASS sniper stays empty before 2.5 seconds
+PASS sniper Q reload completes in 50 ticks and charges one
+PASS sniper launches real high-speed arrow
+PASS sniper shot consumes one round, one durability and starts single-shot reload
+PASS sniper arrow is straight, fast and not retrievable
+PASS native arrow exists after trigger
+PASS unarmoured sniper damage is ten (five hearts); before=40.0 after=30.0
+PASS sniper damage still tags both players in PvP
+PASS single-shot automatic reload charges its extra round once
+PASS armoured sniper test fires
+PASS sniper ordinary damage is reduced by armour, protection and resistance; health=39.395198822021484
+PASS sniper damage-cancellation test fires
+PASS external plugins can cancel ordinary sniper damage
+PASS sniper cannot fire in non-wild world outside protected radius
+PASS sniper cannot reload in non-wild world
+PASS sniper cancelled launch cannot fire
+PASS sniper launch cancellation charges neither ammo nor durability
+PASS SHOTGUN ammo anvil processing blocked
+PASS SNIPER ammo anvil processing blocked
+PASS native item serialization preserves identity and magazine
+PASS pistol can be deposited into real vault without duplicate held copy
+PASS vault withdrawal preserves magazine and UUID
+PASS weapon HUD still displays coins when border HUD is disabled
+PASS reload pending during final normal quit
+PASS 3.2 enabled on real Paper 26.2 / Java 25
+PASS 31 to 32 migration preserves capacity settings
+PASS vault tier retained
+PASS vault items retained
+PASS ordinary inventory retained
+PASS five homes retained
+PASS one-time kit receipts retained
+PASS grave expiry epoch not reset
+PASS 40000 world border retained
+PASS custom garden block retained: GOLD_BLOCK
+PASS garden journal unchanged
+PASS Discord token setting retained without enabling actual network test
+PASS wallet survives 3.0 restart
+PASS same gun UUID survives actual server restart
+PASS quit cancels pending reload without charge or free refill
+PASS admin-adjusted coins survive actual server restart
+PASS shotgun UUID, empty magazine and two uses survive restart
+PASS sniper UUID, loaded chamber and durability survive restart
+PASS volley and damage contexts do not leak across restart
+PASS reload tasks and projectiles do not leak across restart
+PASS coin and pistol HUD resume after restart

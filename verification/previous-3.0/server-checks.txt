@@ -1,0 +1,93 @@
+PASS genuine released 2.9 baseline enabled
+PASS 2.9 starter receipts seeded
+PASS garden generation complete on 2.9
+PASS 3.0 enabled on real Paper 26.2 / Java 25
+PASS 29 to 30 migration preserves capacity settings
+PASS vault tier retained
+PASS vault items retained
+PASS ordinary inventory retained
+PASS five homes retained
+PASS one-time kit receipts retained
+PASS grave expiry epoch not reset
+PASS 40000 world border retained
+PASS custom garden block retained
+PASS garden journal unchanged
+PASS Discord token setting retained without enabling actual network test
+PASS native wallet preserved from 2.9
+PASS new pistol setting added automatically
+PASS pistol command opens Korean GUI
+PASS special shop remains page four
+PASS GUI-confirmed pistol purchase costs exactly 100000
+PASS purchased gun has genuine persistent identity
+PASS new pistol starts unloaded
+PASS single ammo purchase succeeds
+PASS single round costs 500 and gives one round
+PASS six-pack purchase succeeds
+PASS six pack costs 2500 and gives six rounds
+PASS full bag does not charge for failed weapon purchase
+PASS anvil-style copied gun name grants no weapon powers
+PASS renamed ordinary iron nuggets never count as ammo
+PASS spawn blocks shooting without consuming ammo
+PASS reload can prepare weapon safely in spawn
+PASS reload has no immediate charge or instant refill
+PASS reload does not complete before 30 ticks
+PASS 1.5-second reload fills six and charges one extra round
+PASS coin and magazine HUD remain visible together
+PASS right-click event fires and consumes one magazine allowance and one reserve round
+PASS same-tick fire spam cannot duplicate or spend extra shots
+PASS real moving projectile deals exactly six raw damage
+PASS remaining magazine shot 2 fires
+PASS remaining magazine shot 3 fires
+PASS remaining magazine shot 4 fires
+PASS remaining magazine shot 5 fires
+PASS remaining magazine shot 6 fires
+PASS six shots after initial reload use exactly seven total rounds
+PASS no-ammo reload cannot refill
+PASS empty magazine starts automatic reload after last shot
+PASS automatic reload consumes its extra round only once
+PASS native Q/drop is cancelled for pistol
+PASS Q restores same held weapon and starts reload
+PASS switching slots cancels reload with no fee and no refill
+PASS offhand rounds included in reserve count
+PASS offhand-only ammo can pay reload
+PASS completed reload consumes exactly one offhand round
+PASS right click holding offhand ammo reloads instead of firing
+PASS cancelled ProjectileLaunchEvent prevents firing
+PASS cancelled launch does not charge magazine or reserve
+PASS anvil output blocked for genuine gun
+PASS anvil output blocked for genuine ammo
+PASS custom rounds cannot be converted by crafting
+PASS ordinary iron nugget crafting remains functional
+PASS newbie-target test projectile fires
+PASS newbie protection blocks pistol PvP
+PASS friendly-fire test projectile fires
+PASS team PvP off blocks pistol damage
+PASS PvP-enabled projectile fires
+PASS team PvP on allows six damage
+PASS pistol damage tags both players in combat
+PASS external damage-cancel test fires
+PASS other plugins can cancel pistol damage normally
+PASS projectile can approach protected spawn from outside
+PASS spawn target remains protected from incoming bullets
+PASS native item serialization preserves identity and magazine
+PASS pistol can be deposited into real vault without duplicate held copy
+PASS vault withdrawal preserves magazine and UUID
+PASS weapon HUD still displays coins when border HUD is disabled
+PASS reload pending during final normal quit
+PASS 3.0 enabled on real Paper 26.2 / Java 25
+PASS 29 to 30 migration preserves capacity settings
+PASS vault tier retained
+PASS vault items retained
+PASS ordinary inventory retained
+PASS five homes retained
+PASS one-time kit receipts retained
+PASS grave expiry epoch not reset
+PASS 40000 world border retained
+PASS custom garden block retained
+PASS garden journal unchanged
+PASS Discord token setting retained without enabling actual network test
+PASS wallet survives 3.0 restart
+PASS same gun UUID survives actual server restart
+PASS quit cancels pending reload without charge or free refill
+PASS reload tasks and projectiles do not leak across restart
+PASS coin and pistol HUD resume after restart

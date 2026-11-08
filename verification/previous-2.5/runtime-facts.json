@@ -1,0 +1,17 @@
+{
+  "plugin": "2.5",
+  "paper": "26.2 build 135",
+  "java": "25.0.5",
+  "jar_sha256": "3dabc8607e83f4b11408e245f344da32dc1a531208b4c4965b40c44bd7c794ec",
+  "unit_tests": 71,
+  "native_assertions": 38,
+  "successful_native_boots": 3,
+  "native_block_comparisons": 39031,
+  "command_roots": 41,
+  "command_names_and_aliases": 106,
+  "discord": "Bot REST API; local HTTP test, no live credentials",
+  "spawn_size": [
+    100,
+    100
+  ]
+}

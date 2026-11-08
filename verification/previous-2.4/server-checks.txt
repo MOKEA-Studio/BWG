@@ -1,0 +1,180 @@
+PASS 2.4 enables on real Paper 26.2 and Java 25
+PASS legacy single home migrates without loss
+PASS existing wallet vault tier survives upgrade
+PASS system and player shops cannot open in wilderness
+PASS wilderness purchase rechecks location before charging
+PASS shop is available inside protected spawn
+PASS exact special shop price: guardian_set
+PASS complete special item delivery: guardian_set
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS exact special shop price: phoenix_set
+PASS complete special item delivery: phoenix_set
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS exact special shop price: executioner_sword
+PASS complete special item delivery: executioner_sword
+PASS special item metadata survives serialization
+PASS exact special shop price: immortal_set
+PASS complete special item delivery: immortal_set
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS special item metadata survives serialization
+PASS exact special shop price: giant_serum
+PASS complete special item delivery: giant_serum
+PASS special item metadata survives serialization
+PASS fourth shop page includes all eight special products
+PASS serum consumes one bottle and saves one permanent use
+PASS serum consumes one bottle and saves one permanent use
+PASS serum consumes one bottle and saves one permanent use
+PASS three serum uses add exactly three permanent hearts
+PASS fourth serum use is rejected without consuming bottle
+PASS guardian one-heart bonus stacks with permanent serum hearts
+PASS guardian full set grants ten percent knockback resistance
+PASS guardian retains vanilla per-part diamond armor
+PASS partial guardian set removes only set bonus and clamps health
+PASS guardian reflection emits a single 1.5 damage hit
+PASS phoenix retains netherite base armor values
+PASS phoenix full set reduces speed by exactly three percent
+PASS phoenix rescue cancels lethal native damage leaving one heart
+PASS phoenix gives regeneration II for three seconds
+PASS phoenix cooldown is five minutes
+PASS phoenix cannot rescue again during cooldown
+PASS immortal named diamond set uses requested netherite base
+PASS removing phoenix set removes its speed penalty
+PASS immortal lethal native hit leaves exactly half a heart
+PASS immortal grants speed II for three seconds
+PASS immortal cooldown begins at activation for five seconds
+PASS immortal blocks subsequent damage during three-second immunity
+PASS immortal immunity expires before five-second rescue cooldown
+PASS executioner equipped attack damage and speed match 9 and 2
+PASS executioner adds exact fixed damage through netherite and resistance
+PASS executioner adds no fixed hit below half health
+PASS first-time account receives fifteen-minute protection
+PASS existing account does not regain newbie protection
+PASS newbie cannot be damaged by ordinary player
+PASS newbie cannot attack another player while protected
+PASS newbie protection keeps monster damage active
+PASS newbie protection expires at accumulated online fifteen minutes
+PASS natural tree root is breakable
+PASS one natural log fells all connected tree logs
+PASS tree felling consumes tool durability for every log
+PASS player-placed house logs do not trigger mass felling
+PASS real death invokes grave creation
+PASS grave holds all thirty-six storage slots armor and offhand
+PASS native death inventory is cleared without a duplicate retained copy
+PASS death inventory is not scattered as loose item entities
+PASS ordinary wilderness death places a physical chest marker
+PASS grave chest cannot be broken to bypass item journal
+PASS ordinary chest cannot merge with grave marker
+PASS grave vanilla inventory is recognized for hopper and access blocking
+PASS full inventory cannot partially withdraw a grave stack
+PASS another player can raid an unlocked grave at its location
+PASS grave preserves full original item metadata
+PASS replayed grave click cannot duplicate an item
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS every remaining grave stack returns exactly once
+PASS grave marker disappears after final item is withdrawn
+PASS legacy default home remains after restart
+PASS sethome does not save before five-second warmup
+PASS sethome saves after five stationary seconds
+PASS movement cancels pending home save
+PASS home count is limited to five
+PASS combat blocks home teleport without starting warmup
+PASS home teleport completes after five stationary seconds
+PASS spawn teleport has not completed at six seconds
+PASS spawn teleport waits at least ten seconds
+PASS command guide provides home grave and voice GUI shortcuts
+PASS OP feature GUI renders new controls
+PASS official Simple Voice Chat 2.6.25 enables alongside plugin
+PASS voice API addon receives actual server-start event
+PASS Korean voice GUI opens without requiring voice-mod installation
+PASS voice self-mute updates thread-safe microphone block state
+PASS registered voice API handler cancels muted microphone packet
+PASS native PvP death executes
+PASS ordinary eligible PvP kill pays one of forty eighty or one hundred coins
+PASS repeat kill of same player cannot farm PvP coins
+PASS non-OP cannot start double event
+PASS OP duration command starts double event
+PASS event queues global record music for online players
+PASS double event PvP kill pays exactly eighty one hundred sixty or two hundred
+PASS double event never duplicates player death grave items
+PASS event doubles monster drop quantity while leaving experience unchanged
+PASS five named homes persist after full restart
+PASS old vault tier remains after update and restart
+PASS permanent serum hearts persist after restart without stacking twice
+PASS repeated armor refresh cannot multiply serum health
+PASS phoenix cooldown survives logout and restart
+PASS newbie elapsed protection survives reconnect
+PASS pending grave withdrawal reconciles exactly once on reconnect
+PASS repeated grave recovery cannot duplicate delivered item
+PASS event duration persists across server restart
+PASS native backup payload recovers death missing from older grave snapshot
+PASS published grave payload is cleaned after durable journal save
+PASS expanded plugin status GUI renders all feature rows
+PASS backup includes grave and event authoritative files
+PASS backup includes native inventory serum and cooldown data
+PASS starting an existing event does not accidentally shorten it
+PASS event stop clears bonus and stops record music
+PASS final voice addon enables with official runtime
+PASS team voice group allows its own current team member
+PASS team voice group rejects nonmembers even with a group invite
+PASS keepInventory preserves native items without creating a duplicate grave
+PASS voice mute is saved before optional-dependency restart
+PASS final plugin starts without optional voice plugin or API classes
+PASS missing voice provider reports unavailable without blocking SMP
+PASS voice help GUI remains accessible when provider is absent
+PASS self-mute preference persists across reconnect
+PASS final build still loads five homes and permanent serum health
+PASS actual Korean command-guide alias opens its own help GUI
+PASS actual Korean serum alias opens the serum GUI
+PASS actual home command enters five-home GUI
+PASS actual Korean voice command enters integration GUI
+PASS actual Korean tree command enters personal toggle GUI
+PASS actual Korean newbie command enters protection GUI
+PASS actual Korean event command enters event GUI
+PASS actual shop command reaches all new special products
+PASS official voice runtime loads the packaged Korean server translation

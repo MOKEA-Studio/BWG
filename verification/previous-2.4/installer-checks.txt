@@ -1,0 +1,5 @@
+PASS official pinned SHA-512
+PASS old plugin JAR archived outside plugins
+PASS existing SMP data preserved
+PASS existing voice port and distance preserved
+PASS Korean known keys merged and unknown keys preserved

@@ -1,0 +1,83 @@
+PASS genuine 2.8 baseline boots
+PASS one-time kit receipts recorded on 2.8
+PASS garden complete before upgrade
+PASS 2.9 enabled on real Paper 26.2 / Java 25
+PASS automatic schema migration preserves capacities
+PASS native coin balance preserved
+PASS vault tier preserved
+PASS serialized vault items preserved
+PASS ordinary inventory preserved
+PASS five homes preserved
+PASS one-time kit receipts preserved
+PASS restart cannot duplicate starter kit
+PASS grave expiry epoch unchanged
+PASS 40000 border retained
+PASS custom garden block retained
+PASS upgrade does not regenerate garden
+PASS coin action bar retained with border HUD off
+PASS missing optional bridge does not disable Java SMP
+PASS armor price retained: leather_set
+PASS armor price retained: iron_set
+PASS armor price retained: diamond_set
+PASS armor price retained: netherite_set
+PASS startup notification emitted once after real startup
+PASS Korean Discord GUI contains receive and lifecycle controls
+PASS non-OP cannot disable Discord
+PASS duplicate startup event does not duplicate notice
+PASS private command arguments redacted
+PASS command use recorded with hidden arguments
+PASS Minecraft chat event relayed to Discord outbox
+PASS inbound Korean and slash text delivered once; duplicates bots other guild excluded
+PASS Discord slash text does not execute game command
+PASS incoming Discord profanity uses live game filter
+PASS Discord chat does not echo to Discord
+PASS 2.9 enabled on real Paper 26.2 / Java 25
+PASS automatic schema migration preserves capacities
+PASS native coin balance preserved
+PASS vault tier preserved
+PASS serialized vault items preserved
+PASS ordinary inventory preserved
+PASS five homes preserved
+PASS one-time kit receipts preserved
+PASS restart cannot duplicate starter kit
+PASS grave expiry epoch unchanged
+PASS 40000 border retained
+PASS custom garden block retained
+PASS upgrade does not regenerate garden
+PASS coin action bar retained with border HUD off
+PASS missing optional bridge does not disable Java SMP
+PASS armor price retained: leather_set
+PASS armor price retained: iron_set
+PASS armor price retained: diamond_set
+PASS armor price retained: netherite_set
+PASS controller mode has no duplicate plugin Gateway
+PASS authenticated loopback API active
+PASS controller owns lifecycle notices without plugin duplicates
+PASS plugin detects controller heartbeat
+PASS command guide remains accessible
+PASS controller chat delivered through authenticated API on real Paper
+PASS 2.9 enabled on real Paper 26.2 / Java 25
+PASS automatic schema migration preserves capacities
+PASS native coin balance preserved
+PASS vault tier preserved
+PASS serialized vault items preserved
+PASS ordinary inventory preserved
+PASS five homes preserved
+PASS one-time kit receipts preserved
+PASS restart cannot duplicate starter kit
+PASS grave expiry epoch unchanged
+PASS 40000 border retained
+PASS custom garden block retained
+PASS upgrade does not regenerate garden
+PASS coin action bar retained with border HUD off
+PASS missing optional bridge does not disable Java SMP
+PASS armor price retained: leather_set
+PASS armor price retained: iron_set
+PASS armor price retained: diamond_set
+PASS armor price retained: netherite_set
+PASS controller mode has no duplicate plugin Gateway
+PASS authenticated loopback API active
+PASS controller owns lifecycle notices without plugin duplicates
+PASS plugin detects controller heartbeat
+PASS command guide remains accessible
+PASS coin balance survives actual Discord shutdown and restart

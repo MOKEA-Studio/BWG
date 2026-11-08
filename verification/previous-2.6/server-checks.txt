@@ -1,0 +1,48 @@
+PASS old 2.5 JAR boots for genuine upgrade fixture
+PASS 2.5 physical grave marker placed
+PASS 2.5 garden created before swapping JAR
+PASS 2.6 final JAR loads after 2.5 swap
+PASS existing configuration automatically expands border to 40000
+PASS existing player and queue capacities preserved
+PASS native border expanded in world
+PASS native border expanded in world_nether
+PASS native border expanded in world_the_end
+PASS native border expanded in BlackWikiSMPWild
+PASS 40k exact edge allowed and outside edge detected
+PASS native wallet and vault tier survive JAR replacement
+PASS vault contents preserved
+PASS five homes preserved
+PASS customized 2.5 garden block survives update
+PASS completed garden journal unchanged
+PASS pre-upgrade graves receive one ten-minute grace period
+PASS legacy grave remains before exact grace deadline
+PASS legacy physical and virtual graves expire at deadline
+PASS expired physical chest removed without item drops
+PASS new grave lasts until 600 seconds
+PASS new grave expires exactly at 600 seconds
+PASS undelivered pending withdrawal is discarded and cannot reopen expired grave
+PASS already-delivered native receipt reconciles without duplicate or confiscation
+PASS existing Alice and Bob do not open newcomer windows
+PASS Korean welcome command opens GUI
+PASS existing command guide still opens
+PASS genuine first join opens exactly one welcome window
+PASS nonmatching greeting earns no coins
+PASS cancelled public chat earns no coins
+PASS newcomer cannot welcome themself for reward
+PASS public Korean greeting pays exactly 100 coins
+PASS repeat greeting gives no second payout
+PASS another player can independently receive the reward
+PASS reward saved to native wallet PDC
+PASS first-join marker saved before reward window
+PASS replayed join event cannot reopen first-join reward
+PASS new newcomer gives its own independent 100 coins
+PASS overlapping newcomers still each pay only once
+PASS queued player cannot collect welcome coins
+PASS greeting after real ten-second window gets no reward
+PASS restart preserves original grave-expiry epoch
+PASS rejoining known newcomer after server restart opens no window
+PASS native welcome coins survive restart
+PASS expired graves never reopen after restart
+PASS unexpired grave retains original creation deadline
+PASS newcomer receipt survives actual reconnect
+PASS expanded border and prior capacity remain after restart

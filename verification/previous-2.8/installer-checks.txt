@@ -1,0 +1,8 @@
+PASS running-world lock prevents installation before any original JAR move
+PASS offline installer archives 2.6 JAR and installs 2.8 plus three official bridge plugins
+PASS installer preserves user capacities and bot settings while adopting existing Bedrock port
+PASS official authentication and dot prefix merged without losing existing bridge options
+PASS world bytes account data Floodgate key and linking database stay unchanged
+PASS chat-signature setting updated without changing online account authentication
+PASS repeated installation is byte-for-byte idempotent
+PASS failed configuration write rolls back installed files and restores original JAR

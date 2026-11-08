@@ -1,0 +1,44 @@
+{
+  "plugin": "2.8",
+  "date_kst": "2026-11-06",
+  "paper": "26.2 build 135",
+  "java": "25.0.5",
+  "base_26_sha256": "6d237b3c90fbad3bd4db3fd853b1eada6e88e0c10f2d62563521fbe3cc7ffa16",
+  "jar_sha256": "196476bbfe600d4ccadd4196427ca9f6eab8536c082bbd6d31becf41f3b84b3c",
+  "unit_tests": 92,
+  "unit_failures": 0,
+  "unit_errors": 0,
+  "unit_skipped": 0,
+  "native_checks": 62,
+  "native_baseline_setup_checks": 2,
+  "network_checks": 1,
+  "installer_checks": 8,
+  "successful_native_boots": 4,
+  "native_boot_versions": [
+    "2.6",
+    "2.8 with bridge",
+    "2.8 without bridge",
+    "final 2.8 without bridge"
+  ],
+  "command_roots": 44,
+  "command_names_and_aliases": 116,
+  "gameplay_class_bytes_identical_between_bridge_test_and_release": true,
+  "final_jar_booted_on_paper": true,
+  "geyser": {
+    "version": "2.12.1",
+    "build": 1292,
+    "sha256": "ff27d12d8f1a107efebb389bba217ca3016c7a6eac97326149b7f97049398a6a"
+  },
+  "floodgate": {
+    "version": "2.2.5",
+    "build": 141,
+    "sha256": "21570aff9ce17d6983928e8552777760e1ede5050026b04c686b0ae112e6fd7e"
+  },
+  "viaversion": {
+    "version": "5.12.2",
+    "sha256": "24e4876fefe73e08a4c87cd6c457ee0916e62dd69656631caf41e26f909d504b"
+  },
+  "bedrock_scope": "Real Geyser/Floodgate/ViaVersion loading, live prefix/auth configuration, protocol path, active NetherNet channel and HTTP signaling. No authenticated phone login or external-router test.",
+  "network_test_note": "Only test runner used an end-to-end TLS CONNECT relay to pre-open the same authorized egress proxy tunnels for Microsoft public metadata; no key substitution or auth bypass. Relay not used by installation.",
+  "historical_reports": "previous-* directories are historical and excluded from current counts"
+}

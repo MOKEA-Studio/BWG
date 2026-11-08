@@ -1,0 +1,23 @@
+package kr.blackwiki.smp;
+import de.maxhenkel.voicechat.api.*;
+import de.maxhenkel.voicechat.api.events.*;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import java.util.*;
+/** Only this optional class links to the external API. Never decode or record microphone audio. */
+final class VoiceAddon implements VoicechatPlugin,VoiceSupport.Backend {
+    private final VoiceSupport owner;private volatile VoicechatServerApi api;private volatile boolean closed;private final Map<UUID,UUID> groups=new HashMap<>(),members=new HashMap<>();private final Map<UUID,UUID> protectedGroups=new java.util.concurrent.ConcurrentHashMap<>();private volatile Map<UUID,UUID> membership=Map.of();
+    private VoiceAddon(VoiceSupport owner){this.owner=owner;}
+    static VoiceSupport.Backend connect(VoiceSupport owner){BukkitVoicechatService service=Bukkit.getServicesManager().load(BukkitVoicechatService.class);if(service==null)return null;VoiceAddon addon=new VoiceAddon(owner);service.registerPlugin(addon);return addon;}
+    @Override public String getPluginId(){return "blackwikismp";}
+    @Override public void registerEvents(EventRegistration registration){registration.registerEvent(VoicechatServerStartedEvent.class,e->api=e.getVoicechat());registration.registerEvent(MicrophonePacketEvent.class,this::microphone);registration.registerEvent(JoinGroupEvent.class,this::joining);}
+    void joining(JoinGroupEvent e){if(closed||e.getGroup()==null||e.getConnection()==null)return;UUID team=protectedGroups.get(e.getGroup().getId());if(team!=null&&!team.equals(membership.get(e.getConnection().getPlayer().getUuid())))e.cancel();}
+    private void refreshTeams(){Map<UUID,UUID> next=new HashMap<>();for(var t:owner.p.data.teams.values())for(UUID id:t.members)next.put(id,t.id);membership=Map.copyOf(next);}
+    void microphone(MicrophonePacketEvent e){var connection=e.getSenderConnection();if(connection!=null&&owner.blocked(connection.getPlayer().getUuid()))e.cancel();}
+    @Override public boolean ready(){return api!=null;}
+    @Override public String status(Player a){if(api==null)return "음성 서버 시작 대기";var c=api.getConnectionOf(a.getUniqueId());return c==null||!c.isInstalled()?"클라이언트 음성 모드가 감지되지 않았습니다.":c.isConnected()?"음성 연결됨"+(c.getGroup()==null?" · 근접 대화":" · "+c.getGroup().getName()):"음성 모드 있음 · UDP 연결 확인 필요";}
+    @Override public void team(Player a){if(api==null){owner.p.tell(a,"음성 서버가 아직 준비되지 않았습니다.");return;}var t=owner.p.teams.of(a);if(t==null){owner.p.tell(a,"먼저 팀에 가입하세요. /팀");return;}var c=api.getConnectionOf(a.getUniqueId());if(c==null||!c.isInstalled()||!c.isConnected()){owner.p.tell(a,"음성 모드와 UDP 연결을 확인하세요.");return;}Group group=groups.containsKey(t.id)?api.getGroup(groups.get(t.id)):null;if(group==null){group=api.groupBuilder().setName("팀 음성 · "+t.name).setPassword(UUID.randomUUID().toString()).setHidden(true).setPersistent(false).setType(Group.Type.ISOLATED).build();groups.put(t.id,group.getId());}protectedGroups.put(group.getId(),t.id);refreshTeams();c.setGroup(group);members.put(a.getUniqueId(),t.id);owner.p.tell(a,"팀 음성에 참가했습니다: "+t.name);}
+    @Override public void leave(Player a){if(api!=null){var c=api.getConnectionOf(a.getUniqueId());if(c!=null)c.setGroup(null);}members.remove(a.getUniqueId());owner.p.tell(a,"음성 그룹에서 나왔습니다. 근접 대화를 사용합니다.");}
+    @Override public void tick(){if(api==null||closed)return;refreshTeams();for(Player player:Bukkit.getOnlinePlayers()){var connection=api.getConnectionOf(player.getUniqueId());if(connection!=null&&connection.getGroup()!=null){UUID team=protectedGroups.get(connection.getGroup().getId());if(team!=null&&!team.equals(membership.get(player.getUniqueId())))connection.setGroup(null);}}for(var entry:List.copyOf(members.entrySet())){Player a=Bukkit.getPlayer(entry.getKey());if(a==null){members.remove(entry.getKey());continue;}var t=owner.p.teams.of(a);var c=api.getConnectionOf(a.getUniqueId());UUID expected=groups.get(entry.getValue());if(t==null||!t.id.equals(entry.getValue())||owner.p.queue.waiting(a)){if(c!=null&&c.getGroup()!=null&&c.getGroup().getId().equals(expected))c.setGroup(null);members.remove(entry.getKey());}else if(c==null||c.getGroup()==null||!c.getGroup().getId().equals(expected))members.remove(entry.getKey());}}
+    @Override public void close(){closed=true;if(api!=null){for(var entry:members.entrySet()){var c=api.getConnectionOf(entry.getKey());UUID group=groups.get(entry.getValue());if(c!=null&&c.getGroup()!=null&&c.getGroup().getId().equals(group))c.setGroup(null);}for(UUID id:groups.values())api.removeGroup(id);}groups.clear();members.clear();protectedGroups.clear();membership=Map.of();}
+}

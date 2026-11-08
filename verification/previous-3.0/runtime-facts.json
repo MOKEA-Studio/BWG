@@ -1,0 +1,37 @@
+{
+  "plugin": "3.0",
+  "date_kst": "2026-11-07",
+  "paper": "26.2 build 135",
+  "java": "25.0.5",
+  "unit_tests": 155,
+  "unit_failures": 0,
+  "unit_errors": 0,
+  "unit_skipped": 0,
+  "native_assertions": 93,
+  "native_failures": 0,
+  "native_boots": [
+    "released 2.9 baseline",
+    "3.0 upgrade and live pistol gameplay",
+    "3.0 restart and persistent item state"
+  ],
+  "offline_controller_setup_checks": 3,
+  "baseline_29_sha256": "0b22d88f90bf396dfa554395ae617793b9dcb6cb78aa6e5b09bcd865beb27b67",
+  "release_jar_sha256": "39799e9480dfd01cca782e29f614fdc42cf6b1e145520e3be1fa7bba6ce39484",
+  "native_jar_equals_release": true,
+  "unchanged_existing_class_files": 120,
+  "existing_class_files": 137,
+  "pistol": {
+    "magazine_capacity": 6,
+    "damage": 6,
+    "reload_ticks": 30,
+    "ammo_per_shot": 1,
+    "additional_ammo_per_reload": 1,
+    "pistol_price": 100000,
+    "single_ammo_price": 500,
+    "six_pack_price": 2500,
+    "material": "CARROT_ON_A_STICK",
+    "ammo_material": "IRON_NUGGET"
+  },
+  "scope": "Real Paper, native inventory/PDC, two local protocol clients, Bukkit interaction/Q drop, moving projectile collisions, protections, item processing and restart. Some test inputs use API/reflection. No new authenticated Bedrock phone login or personal Discord token test.",
+  "historical_results": "previous-* directories are excluded from current counts"
+}

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "geyser",
+    "version": "2.12.1",
+    "build": 1292,
+    "file_name": "Geyser-Spigot.jar",
+    "sha256": "ff27d12d8f1a107efebb389bba217ca3016c7a6eac97326149b7f97049398a6a",
+    "url": "https://download.geysermc.org/v2/projects/geyser/versions/2.12.1/builds/1292/downloads/spigot",
+    "license": "MIT"
+  },
+  {
+    "id": "floodgate",
+    "version": "2.2.5",
+    "build": 141,
+    "file_name": "floodgate-spigot.jar",
+    "sha256": "21570aff9ce17d6983928e8552777760e1ede5050026b04c686b0ae112e6fd7e",
+    "url": "https://download.geysermc.org/v2/projects/floodgate/versions/2.2.5/builds/141/downloads/spigot",
+    "license": "MIT"
+  },
+  {
+    "id": "viaversion",
+    "version": "5.12.2",
+    "file_name": "ViaVersion-5.12.2.jar",
+    "sha256": "24e4876fefe73e08a4c87cd6c457ee0916e62dd69656631caf41e26f909d504b",
+    "url": "https://github.com/ViaVersion/ViaVersion/releases/download/5.12.2/ViaVersion-5.12.2.jar",
+    "license": "GPL-3.0"
+  }
+]
