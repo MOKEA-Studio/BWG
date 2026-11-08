@@ -1,5 +1,5 @@
 name: BlackWikiSMP
-version: '3.4'
+version: '3.5'
 main: kr.blackwiki.smp.BlackWikiSMP
 api-version: '26.2'
 author: BlackWiki
