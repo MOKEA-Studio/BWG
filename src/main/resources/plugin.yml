@@ -7,6 +7,9 @@ description: Korean raid SMP - GUI, FIFO queue, safe spawn, teams, rankings, bor
 load: POSTWORLD
 softdepend: [voicechat, floodgate, Geyser-Spigot, ViaVersion]
 commands:
+  smpafk:
+    aliases: [afk, 잠수, 잠수구역]
+    description: 구역 3 공허 AFK 입장 / 주민 구역 선택 / 나가기
   smptitle:
     aliases: [칭호, title]
     description: 무료·구매·킬 달성 칭호 GUI

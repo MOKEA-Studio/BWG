@@ -21,6 +21,7 @@ public final class DataStore implements AutoCloseable {
         public boolean newcomer;
         public final LinkedHashMap<String,Location> homes=new LinkedHashMap<>();
         public int vaultTier,coinSeconds;
+        public long normalCoinNanos,afkCoinNanos;
         public long wildEpoch;
         public final List<String> vault=new ArrayList<>(Collections.nCopies(54,""));
         public boolean hud=true, tpa=true, notices=true;
@@ -55,7 +56,7 @@ public final class DataStore implements AutoCloseable {
             UUID id=UUID.fromString(k);User u=new User(id);String p="users."+k+".";
             u.name=y.getString(p+"name",u.name);u.seconds=Math.max(0,y.getLong(p+"seconds"));
             u.kills=Math.max(0,y.getLong(p+"kills"));u.deaths=Math.max(0,y.getLong(p+"deaths"));
-            u.coins=Math.max(0,y.getLong(p+"coins"));u.miningXp=Math.max(0,y.getLong(p+"mining-xp"));u.coinSeconds=Math.clamp(y.getInt(p+"coin-seconds"),0,1);u.wildEpoch=Math.max(0,y.getLong(p+"wild-epoch"));u.vaultTier=Math.clamp(y.getInt(p+"vault-tier"),0,2);
+            u.coins=Math.max(0,y.getLong(p+"coins"));u.miningXp=Math.max(0,y.getLong(p+"mining-xp"));u.coinSeconds=Math.clamp(y.getInt(p+"coin-seconds"),0,1);u.normalCoinNanos=Math.clamp(y.getLong(p+"normal-coin-nanos",(long)u.coinSeconds*1_000_000_000L),0L,1_999_999_999L);u.afkCoinNanos=Math.clamp(y.getLong(p+"afk-coin-nanos",0L),0L,499_999_999L);u.wildEpoch=Math.max(0,y.getLong(p+"wild-epoch"));u.vaultTier=Math.clamp(y.getInt(p+"vault-tier"),0,2);
             List<String> stored=y.getStringList(p+"vault");for(int n=0;n<Math.min(54,stored.size());n++)u.vault.set(n,stored.get(n));
             u.hud=y.getBoolean(p+"hud",true);u.tpa=y.getBoolean(p+"tpa",true);u.notices=y.getBoolean(p+"notices",true);
             u.home=readLocation(y,p+"home");var hs=y.getConfigurationSection(p+"homes");if(hs==null){if(u.home!=null)u.homes.put("기본",u.home);}else{for(String key:hs.getKeys(false)){Location at=readLocation(y,p+"homes."+key);if(at!=null)u.homes.put(HomeRules.name(key),at);}if(u.homes.size()>5)throw new IOException("Too many homes: "+id);u.home=u.homes.get("기본");}u.returnTo=readLocation(y,p+"return");u.rtpAt=y.getLong(p+"rtp-at");users.put(id,u);
@@ -78,25 +79,37 @@ public final class DataStore implements AutoCloseable {
     String name(UUID id) {User u=users.get(id);return u==null?id.toString().substring(0,8):u.name;}
     UUID find(String name) {return users.values().stream().filter(u->u.name.equalsIgnoreCase(name)).map(u->u.id).findFirst().orElse(null);}
     void changed() {dirty=true;}
-    void startSession(Player a){clocks.put(a.getUniqueId(),System.nanoTime());}
-    void pauseSession(Player a){clocks.remove(a.getUniqueId());}
+    /** Coin timer per zone: AFK pays every 0.5s, everywhere else every 2s. Sub-interval remainders persist. */
+    private static final class CoinSession{long at;boolean afk;CoinSession(long at,boolean afk){this.at=at;this.afk=afk;}}
+    private final Map<UUID,CoinSession> coinClocks=new HashMap<>();
+    void startSession(Player a){long now=System.nanoTime();clocks.put(a.getUniqueId(),now);coinClocks.put(a.getUniqueId(),new CoinSession(now,plugin.afk.contains(a)));}
+    void pauseSession(Player a){clocks.remove(a.getUniqueId());coinClocks.remove(a.getUniqueId());}
+    private boolean settleCoins(Player a,long now){
+        UUID id=a.getUniqueId();CoinSession session=coinClocks.computeIfAbsent(id,k->new CoinSession(now,plugin.afk.contains(a)));
+        long elapsed=Math.max(0,now-session.at);session.at=now;User u=user(a);long interval=session.afk?500_000_000L:2_000_000_000L;
+        CoinIntervals.Result result=CoinIntervals.advance(session.afk?u.afkCoinNanos:u.normalCoinNanos,elapsed,interval);
+        if(session.afk)u.afkCoinNanos=result.remainder();else{u.normalCoinNanos=result.remainder();u.coinSeconds=(int)(u.normalCoinNanos/1_000_000_000L);}
+        session.afk=plugin.afk.contains(a);u.coins=CoinClock.add(u.coins,result.coins());if(elapsed>0)dirty=true;return result.coins()>0;
+    }
+    void zoneChanged(Player a){if(plugin.queue.waiting(a)){coinClocks.remove(a.getUniqueId());return;}if(!coinClocks.containsKey(a.getUniqueId()))return;settleCoins(a,System.nanoTime());if(plugin.vaults!=null)plugin.vaults.syncCurrency(a,user(a));}
     void tickTime() {
         long now=System.nanoTime();Set<UUID> admitted=new HashSet<>();
-        for(Player p:Bukkit.getOnlinePlayers()) if(!plugin.queue.waiting(p)) {
-            UUID id=p.getUniqueId();admitted.add(id);long prev=clocks.getOrDefault(id,now);
-            long sec=Math.max(0,(now-prev)/1_000_000_000L);
-            if(sec>0){User u=user(p);u.seconds=CoinClock.add(u.seconds,sec);if(u.newcomer)u.newcomerSeconds=CoinClock.add(u.newcomerSeconds,sec);CoinClock.Result reward=CoinClock.advance(u.coinSeconds,sec);u.coins=CoinClock.add(u.coins,reward.coins());u.coinSeconds=reward.progress();if(plugin.vaults!=null)plugin.vaults.syncCurrency(p,u);dirty=true;clocks.put(id,prev+sec*1_000_000_000L);}else clocks.putIfAbsent(id,now);
+        for(Player a:Bukkit.getOnlinePlayers()) if(!plugin.queue.waiting(a)) {
+            UUID id=a.getUniqueId();admitted.add(id);long prev=clocks.getOrDefault(id,now);
+            long sec=Math.max(0,(now-prev)/1_000_000_000L);User u=user(a);
+            if(sec>0){u.seconds=CoinClock.add(u.seconds,sec);if(u.newcomer)u.newcomerSeconds=CoinClock.add(u.newcomerSeconds,sec);clocks.put(id,prev+sec*1_000_000_000L);dirty=true;}else clocks.putIfAbsent(id,now);
+            boolean paid=settleCoins(a,now);if((paid||sec>0)&&plugin.vaults!=null)plugin.vaults.syncCurrency(a,u);
         }
-        clocks.keySet().retainAll(admitted);
+        clocks.keySet().retainAll(admitted);coinClocks.keySet().retainAll(admitted);
     }
-    void leave(Player p) {tickTime();clocks.remove(p.getUniqueId());}
+    void leave(Player a) {tickTime();clocks.remove(a.getUniqueId());coinClocks.remove(a.getUniqueId());}
     List<User> ranking(boolean kills) {return users.values().stream().sorted(Comparator.<User>comparingLong(u->kills?u.kills:u.seconds).reversed().thenComparing(u->u.name,String.CASE_INSENSITIVE_ORDER)).limit(10).toList();}
     List<User> coinRanking(){return users.values().stream().sorted(Comparator.<User>comparingLong(u->u.coins).reversed().thenComparing(u->u.name,String.CASE_INSENSITIVE_ORDER)).limit(10).toList();}
     String snapshot() {
         YamlConfiguration y=new YamlConfiguration(); y.set("schema",1);
         for(User u:users.values()) {
             String p="users."+u.id+".";y.set(p+"name",u.name);y.set(p+"seconds",u.seconds);y.set(p+"kills",u.kills);y.set(p+"deaths",u.deaths);
-            y.set(p+"coins",u.coins);y.set(p+"mining-xp",u.miningXp);y.set(p+"coin-seconds",u.coinSeconds);y.set(p+"wild-epoch",u.wildEpoch);y.set(p+"vault-tier",u.vaultTier);y.set(p+"vault",List.copyOf(u.vault));
+            y.set(p+"coins",u.coins);y.set(p+"mining-xp",u.miningXp);y.set(p+"coin-seconds",u.coinSeconds);y.set(p+"normal-coin-nanos",u.normalCoinNanos);y.set(p+"afk-coin-nanos",u.afkCoinNanos);y.set(p+"wild-epoch",u.wildEpoch);y.set(p+"vault-tier",u.vaultTier);y.set(p+"vault",List.copyOf(u.vault));
             y.set(p+"hud",u.hud);y.set(p+"tpa",u.tpa);y.set(p+"notices",u.notices);y.set(p+"rtp-at",u.rtpAt);
             for(var entry:u.homes.entrySet())writeLocation(y,p+"homes."+entry.getKey(),entry.getValue());writeLocation(y,p+"home",u.homes.get("기본"));writeLocation(y,p+"return",u.returnTo);
         }

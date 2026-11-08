@@ -32,7 +32,7 @@ final class TravelService implements Listener {
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void death(PlayerDeathEvent e){
         Player victim=e.getEntity();p.data.user(victim).deaths++;Combat c=combat.remove(victim.getUniqueId());cancel(victim,"");
         Player killer=victim.getKiller();if(killer==null&&c!=null&&c.until>System.currentTimeMillis())killer=Bukkit.getPlayer(c.opponent);
-        if(killer!=null&&killer!=victim&&!p.teams.same(killer,victim)&&!p.safe(victim.getLocation())&&!p.queue.waiting(victim)){
+        if(!p.afk.contains(victim)&&killer!=null&&killer!=victim&&!p.teams.same(killer,victim)&&!p.safe(victim.getLocation())&&!p.queue.waiting(victim)){
             String pair=killer.getUniqueId()+":"+victim.getUniqueId();long now=System.currentTimeMillis();
             if(kills.getOrDefault(pair,0L)<=now){p.data.user(killer).kills++;kills.put(pair,now+p.cfg().getLong("combat.same-victim-kill-cooldown-seconds",300)*1000);p.swords.playerKill(killer,victim,e);p.events.reward(killer,victim);p.titles.sync(killer);p.tell(killer,"플레이어 킬 +1");}else p.tell(killer,"같은 상대 반복 킬은 잠시 랭킹에 반영되지 않습니다.");
         }p.data.changed();
@@ -49,8 +49,8 @@ final class TravelService implements Listener {
     @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void moved(PlayerMoveEvent e){if(!operations.containsKey(e.getPlayer().getUniqueId()))return;if(e.hasChangedPosition()&&(e.getFrom().getWorld()!=e.getTo().getWorld()||e.getFrom().distanceSquared(e.getTo())>0.0001))cancel(e.getPlayer(),"움직여서 이동이 취소되었습니다.");}
     boolean allowed(Player a){if(p.queue.waiting(a)){p.tell(a,"대기열 입장 후 이용하세요.");return false;}if(inCombat(a)){p.tell(a,"전투가 끝난 뒤 이용하세요. "+combatLeft(a)+"초");return false;}if(a.isDead()||a.isInsideVehicle()||p.admin.otherPassengers(a)){p.tell(a,"살아 있고 탑승하지 않은 상태에서 이용하세요.");return false;}return true;}
     void go(Player a,Location target){go(a,target,target!=null&&p.safe(target)?10:5);}
-    void go(Player a,Location target,int seconds){if(target==null){p.tell(a,"목적지가 없습니다.");return;}Location at=target.clone();begin(a,seconds,()->CompletableFuture.completedFuture(at),()->{},true);}
-    void warm(Player a,Supplier<CompletableFuture<Location>> target,Runnable success){begin(a,5,target,success,true);}
+    void go(Player a,Location target,int seconds){if(p.afk.contains(a))seconds=0;if(target==null){p.tell(a,"목적지가 없습니다.");return;}Location at=target.clone();begin(a,seconds,()->CompletableFuture.completedFuture(at),()->{},true);}
+    void warm(Player a,Supplier<CompletableFuture<Location>> target,Runnable success){begin(a,p.afk.contains(a)?0:5,target,success,true);}
     void waitAction(Player a,int seconds,Runnable success){begin(a,seconds,()->CompletableFuture.completedFuture(null),success,false);}
     private void begin(Player a,int seconds,Supplier<CompletableFuture<Location>> target,Runnable success,boolean teleport){
         if(!allowed(a))return;if(operations.containsKey(a.getUniqueId())){p.tell(a,"이미 이동을 준비 중입니다.");return;}UUID token=UUID.randomUUID();operations.put(a.getUniqueId(),token);Location origin=a.getLocation().clone();long due=System.nanoTime()+seconds*1_000_000_000L;p.tell(a,seconds+"초 대기 · 움직이거나 피해를 받으면 취소됩니다.");
@@ -65,7 +65,7 @@ final class TravelService implements Listener {
                 if(!token.equals(operations.get(a.getUniqueId())))return;
                 if(ex!=null||l==null||Bukkit.getWorld(l.getWorld().getUID())!=l.getWorld()||l.getWorld()==p.queue.world||p.outside(l)||l.getWorld()==p.wildWorld&&p.resets.busy()){cancel(a,"안전한 목적지가 없습니다.");return;}
                 if(!a.isOnline()||a.isDead()||inCombat(a)||p.queue.waiting(a)||a.getWorld()!=origin.getWorld()||a.getLocation().distanceSquared(origin)>.0001){cancel(a,"이동이 취소되었습니다.");return;}
-                operations.remove(a.getUniqueId());p.admin.dropCrown(a);a.teleportAsync(l).whenComplete((ok,error)->p.sync(()->{if(error==null&&Boolean.TRUE.equals(ok)&&a.isOnline()){success.run();p.tell(a,"이동했습니다.");}else if(a.isOnline())p.tell(a,"이동에 실패했습니다.");}));
+                operations.remove(a.getUniqueId());p.admin.dropCrown(a);p.afk.teleport(a,l).whenComplete((ok,error)->p.sync(()->{if(error==null&&Boolean.TRUE.equals(ok)&&a.isOnline()){success.run();p.tell(a,"이동했습니다.");}else if(a.isOnline())p.tell(a,"이동에 실패했습니다.");}));
             }));
         },1,5);warmups.put(a.getUniqueId(),task);
     }
@@ -85,7 +85,7 @@ final class TravelService implements Listener {
             else random(attempt+1).whenComplete((next,ex)->{if(ex!=null)result.completeExceptionally(ex);else result.complete(next);});
         }));return result;
     }
-    void request(Player a,Player target){if(!allowed(a))return;if(target==null||target==a||p.queue.waiting(target)||!p.data.user(target).tpa){p.tell(a,"이 플레이어는 이동 요청을 받을 수 없습니다.");return;}requests.put(target.getUniqueId(),new Request(a.getUniqueId(),target.getLocation().clone(),System.currentTimeMillis()+p.cfg().getLong("teleport.request-seconds",60)*1000));p.tell(a,"이동 요청을 보냈습니다.");p.tell(target,a.getName()+"님이 이동을 요청했습니다. /tpa수락 또는 /tpa거절");p.gui.tpa(target,a.getUniqueId());}
+    void request(Player a,Player target){if(!allowed(a))return;if(target==null||target==a||p.queue.waiting(target)||p.afk.contains(target)||p.afk.contains(a)||!p.data.user(target).tpa){p.tell(a,"이 플레이어는 이동 요청을 받을 수 없습니다.");return;}requests.put(target.getUniqueId(),new Request(a.getUniqueId(),target.getLocation().clone(),System.currentTimeMillis()+p.cfg().getLong("teleport.request-seconds",60)*1000));p.tell(a,"이동 요청을 보냈습니다.");p.tell(target,a.getName()+"님이 이동을 요청했습니다. /tpa수락 또는 /tpa거절");p.gui.tpa(target,a.getUniqueId());}
     void accept(Player a){Request req=requests.remove(a.getUniqueId());if(req==null||req.expires<System.currentTimeMillis()){p.tell(a,"유효한 이동 요청이 없습니다.");return;}Player from=Bukkit.getPlayer(req.from);if(from==null||!allowed(a)){p.tell(a,"요청을 수락할 수 없습니다.");return;}go(from,a.getLocation());}
     void deny(Player a){requests.remove(a.getUniqueId());p.tell(a,"이동 요청을 거절했습니다.");}
     void setHome(Player a){p.homes.set(a,"기본");}

@@ -28,7 +28,7 @@ public final class BedrockInstaller {
             try(var dirs=Files.list(root)){for(Path dir:dirs.filter(Files::isDirectory).toList()){Path lock=dir.resolve("session.lock");if(!Files.isRegularFile(lock))continue;FileChannel channel=FileChannel.open(lock,StandardOpenOption.READ,StandardOpenOption.WRITE);channels.add(channel);FileLock held=channel.tryLock();if(held==null)throw new IOException("서버가 실행 중입니다. 완전히 종료한 뒤 설치하세요.");locks.add(held);}}
             Path plugins=root.resolve("plugins"),config=plugins.resolve("BlackWikiSMP/config.yml"),gFile=plugins.resolve("Geyser-Spigot/config.yml"),fFile=plugins.resolve("floodgate/config.yml");
             YamlConfiguration smp=load(config),g=load(gFile),f=load(fFile);
-            if(smp.getInt("config-version",26)>35)throw new IOException("3.3보다 최신 설정입니다. 설치를 중단했습니다.");
+            if(smp.getInt("config-version",26)>40)throw new IOException("3.3보다 최신 설정입니다. 설치를 중단했습니다.");
             int port=options.containsKey("--port")?Integer.parseInt(options.get("--port")):g.getInt("bedrock.port",smp.getInt("bedrock.port",19132));
             int javaPort=Integer.parseInt(properties.getProperty("server-port","25565"));if(port<1||port>65535||port==javaPort)throw new IOException("Java 서버와 다른 베드락 포트를 선택하세요. 기본값은 19132입니다.");
             Map<Path,byte[]> writes=new LinkedHashMap<>();Map<Path,Path> archives=new LinkedHashMap<>();

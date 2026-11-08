@@ -178,7 +178,7 @@ final class AdminTools implements Listener {
         for(Player a:Bukkit.getOnlinePlayers()){
             if(!crowned(a))continue;Crown c=crowns.get(a.getUniqueId());
             boolean ok=c!=null&&c.parts().stream().allMatch(d->d.isValid()&&a.getPassengers().contains(d));
-            if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR||p.queue.waiting(a)){if(c!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);
+            if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR||p.queue.waiting(a)||p.afk.contains(a)){if(c!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);
         }
     }
     /** Drop the crown before any teleport so passengers never block it; keepCrowns re-attaches within a second. */

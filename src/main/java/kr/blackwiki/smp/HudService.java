@@ -33,6 +33,7 @@ final class HudService {
     String frame(Player a){
         String status="";
         if(p.queue.waiting(a))status="현재 나의 대기열 숫자: "+p.queue.position(a)+" · 전체 "+p.queue.size()+"명 · 게임 "+p.queue.active()+"/"+p.queue.slots();
+        if(p.afk.contains(a))status="구역 3 · AFK · 주민 우클릭으로 이동";
         String clock;if(!p.queue.waiting(a)&&p.realTime!=null&&!(clock=p.realTime.hud()).isBlank())status+=(status.isBlank()?"":" | ")+clock;
         return HudRules.compose(p.data.user(a).coins,status,notice(a),weapon(a));
     }
@@ -58,7 +59,7 @@ final class HudService {
             out.add(row("게임 ",p.queue.active()+" / "+p.queue.slots(),AQUA));
         }else{
             boolean safe=p.safe(a.getLocation());
-            out.add(row("구역 ",safe?"스폰 · 보호구역":"약탈 야생",safe?SAFE:WILD));
+            boolean afk=p.afk.contains(a);out.add(row("구역 ",afk?"AFK · 공허":safe?"스폰 · 보호구역":"약탈 야생",afk?SOFT:safe?SAFE:WILD));if(afk)out.add(Component.text("주민 우클릭 → 구역 선택",DIM));
             if(p.boundaryWorld(a.getWorld()))out.add(row("경계 ",String.format(Locale.ROOT,"%,dm",Math.max(0,(int)p.distance(a.getLocation()))),AQUA));
             long combat=p.travel.combatLeft(a);if(combat>0)out.add(row("⚔ 전투 ",combat+"초",WILD).decorate(TextDecoration.BOLD));
             if(p.newbies.protectedPlayer(a))out.add(row("신규 보호 ",Rules.duration(p.newbies.remaining(a)),SAFE));

@@ -80,7 +80,7 @@ public final class DiscordController implements AutoCloseable {
     static void setup(Path root)throws Exception{
         if(ServerSupervisor.worldLocked(root))throw new SetupError("서버를 완전히 종료한 뒤 설정하세요.");
         Path config=root.resolve("plugins/BlackWikiSMP/config.yml"),controller=root.resolve("blackwikismp-controller/controller.yml");
-        YamlConfiguration smp=load(config);if(smp.getInt("config-version",24)>35)throw new SetupError("최신 설정의 다운그레이드를 중단했습니다.");
+        YamlConfiguration smp=load(config);if(smp.getInt("config-version",24)>40)throw new SetupError("최신 설정의 다운그레이드를 중단했습니다.");
         YamlConfiguration settings=Files.exists(controller)?load(controller):new YamlConfiguration();
         if(!settings.isSet("server-command")){
             List<Path> jars;try(var files=Files.list(root)){jars=files.filter(p->p.toString().endsWith(".jar")&&paper(p)).toList();}

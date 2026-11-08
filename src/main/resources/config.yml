@@ -1,4 +1,4 @@
-# BlackWikiSMP 2.8 / Paper 26.2 / Java 25
+# BlackWikiSMP / Paper 26.2 / Java 25
 # 서버를 종료한 상태에서 수정하거나 /smp reload 를 사용하세요.
 # Anti-Xray는 /smp antixray 적용 후 서버 전체 재시작이 필요합니다.
 worlds:
@@ -6,6 +6,7 @@ worlds:
   spawn: ''
   wild: BlackWikiSMPWild
   queue: BlackWikiSMPQueue
+  afk: BlackWikiSMPAFK
 spawn:
   radius: 500
   # null: 해당 월드의 기존 스폰 좌표
@@ -74,7 +75,7 @@ settings:
   persist-seconds: 60
 
 # 설정 버전은 자동 관리됩니다. 데이터 폴더를 삭제하지 마세요.
-config-version: 35
+config-version: 40
 # Minecraft → Discord 봇 계정으로 채팅/명령/관리 기록을 전송합니다.
 # Discord Developer Portal의 Bot Token과 전송할 텍스트 채널 ID를 입력합니다.
 discord:
@@ -115,7 +116,7 @@ chat-filter:
 moderation:
   max-ban-days: 3650
 
-# 코인: 게임 입장 중 실제 경과 2초마다 1코인. 대기·오프라인 제외.
+# 코인: 일반 구역 실제 2초마다 1코인 / AFK 0.5초마다 1코인. 중복 지급 없음. 대기·오프라인 제외.
 # 상점 가격표는 요청한 고정 가격을 사용합니다. 능력은 레벨 I입니다.
 market:
   # 가격은 손에 든 묶음 전체 기준. 판매 수수료는 없습니다.
@@ -138,6 +139,22 @@ monsters:
   strong-types: [RAVAGER, PIGLIN_BRUTE, VINDICATOR, EVOKER, HOGLIN, ZOGLIN, ELDER_GUARDIAN, BREEZE, CREAKING]
 
 mining:
+  # 블록당 총액입니다. 심층암 광석은 일반 광석과 같습니다.
+  coins:
+    enabled: true
+    block: 2
+    ores:
+      COAL_ORE: 4
+      COPPER_ORE: 5
+      NETHER_GOLD_ORE: 6
+      NETHER_QUARTZ_ORE: 6
+      IRON_ORE: 8
+      REDSTONE_ORE: 10
+      LAPIS_ORE: 12
+      GOLD_ORE: 16
+      DIAMOND_ORE: 40
+      EMERALD_ORE: 60
+      ANCIENT_DEBRIS: 100
   enabled: true
   # 몬스터의 50레벨 제한과 별개인 채광 최고 레벨입니다.
   max-level: 100
@@ -220,6 +237,8 @@ auto-update:
 
 # 한국 시간의 24시간 낮밤 동기화: OP /현실시간 켜기|끄기
 real-time:
+  # 1틱마다 실제 시계로 재계산합니다. 낮/밤뿐 아니라 /time query daytime도 일치합니다.
+  sync-period-ticks: 1
   enabled: false
   timezone: Asia/Seoul
   show-hud: true
@@ -229,7 +248,11 @@ real-time:
     location: 경남 함안군 칠원읍
     latitude: 35.30
     longitude: 128.52
-    poll-seconds: 300
+    poll-seconds: 60
     max-age-seconds: 1800
 spawn-lighting:
   auto-install: true
+
+# 구역 3: 공허 AFK. 높이·월드 이름 변경은 서버 전체 재시작 후 적용됩니다.
+afk:
+  platform-y: 100

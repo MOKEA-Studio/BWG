@@ -16,8 +16,12 @@ final class RealTimeRules {
     }
 
     static long ticks(Instant now, ZoneId zone) {
-        long millis = now.atZone(zone).toLocalTime().toNanoOfDay() / 1000000L;
-        return Math.floorMod(millis - 21600000L, 86400000L) * 24000L / 86400000L;
+        long nanos = now.atZone(zone).toLocalTime().toNanoOfDay();
+        return Math.floorMod(nanos - 21600000000000L, 86400000000000L) * 24000L / 86400000000000L;
+    }
+
+    static long error(long actual, long expected) {
+        return Math.floorMod(actual - expected + 12000L, 24000) - 12000;
     }
 
     static String phase(Instant now, ZoneId zone) {

@@ -51,7 +51,7 @@ final class QueueService implements Listener {
         enqueue(a,false);
     }
     private void recover(Player a){
-        if(a.getWorld()==world){Location l=p.data.user(a).returnTo;if(l==null||l.getWorld()==world||p.outside(l))l=p.spawn();a.teleport(l);}
+        if(a.getWorld()==world){Location l=p.data.user(a).returnTo;if(l==null||l.getWorld()==world||p.outside(l))l=p.spawn();if(p.afk!=null&&p.afk.at(l))p.afk.teleport(a,l);else a.teleport(l);}
         if(!a.hasPlayedBefore())a.teleport(p.spawn());
         p.checkBorder(a);
     }

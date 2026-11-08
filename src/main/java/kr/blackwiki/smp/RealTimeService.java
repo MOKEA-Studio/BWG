@@ -5,6 +5,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ AutoCloseable {
     private boolean closed;
     private String weatherProblem = "";
     private String settingsProblem = "";
+    private long clockPulses;
 
     RealTimeService(BlackWikiSMP p) throws Exception {
         this.p = p;
@@ -84,7 +87,7 @@ AutoCloseable {
     }
 
     private boolean target(World w) {
-        return w.getEnvironment() == World.Environment.NORMAL && w != this.p.queue.world;
+        return w.getEnvironment() == World.Environment.NORMAL && w != this.p.queue.world && !this.p.afk.at(w.getSpawnLocation());
     }
 
     private void save() throws Exception {
@@ -98,6 +101,24 @@ AutoCloseable {
         this.applyAt(Instant.now());
     }
 
+    void pulse() {
+        int period = Math.clamp((long)this.p.cfg().getInt("real-time.sync-period-ticks", 1), 1, 20);
+        if (++this.clockPulses % (long)period != 0L || this.closed || this.busy || this.fault || !this.enabled() || this.p.backups.running() || this.p.resets.busy()) {
+            return;
+        }
+        this.busy = true;
+        try {
+            this.applyTime(Instant.now());
+        }
+        catch (Exception ex) {
+            this.fault = true;
+            this.p.getLogger().log(Level.SEVERE, "Precise clock alignment paused", ex);
+        }
+        finally {
+            this.busy = false;
+        }
+    }
+
     private ZoneId zone() {
         try {
             return ZoneId.of(this.p.cfg().getString("real-time.timezone", "Asia/Seoul"));
@@ -107,8 +128,11 @@ AutoCloseable {
         }
     }
 
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
     void applyAt(Instant instant) {
-        block18: {
+        block19: {
             if (this.closed || this.busy || this.p.backups.running() || this.p.resets.busy()) {
                 return;
             }
@@ -141,10 +165,10 @@ AutoCloseable {
                         this.p.getLogger().log(Level.SEVERE, "Real time synchronization paused", ex);
                     }
                 }
-                if (this.journalInvalid || this.weatherFault && this.enabled() && (this.settings == null || this.settings.enabled())) break block18;
+                if (this.journalInvalid || this.weatherFault && this.enabled() && (this.settings == null || this.settings.enabled())) break block19;
                 try {
-                    WeatherData sample;
-                    WeatherData weatherData = sample = this.enabled() && this.settings != null && this.settings.enabled() ? this.weather.usable(this.settings, instant) : null;
+                    WeatherData sample = this.enabled() && this.settings != null && this.settings.enabled() ? this.weather.usable(this.settings, instant) : null;
+                    WeatherData weatherData = sample;
                     if (sample == null) {
                         this.restoreWeather(true);
                     } else {
@@ -310,9 +334,36 @@ AutoCloseable {
         return (this.fault ? "오류 · 정지" : (this.enabled() ? "켜짐" : "꺼짐")) + " · " + RealTimeRules.display(Instant.now(), this.zone()) + " · " + this.zone().getId() + " · " + (this.settings == null ? this.settingsProblem : (!this.settings.enabled() ? "날씨 연동 꺼짐" : (this.weatherFault ? this.weatherProblem : this.weather.status(this.settings, Instant.now()))));
     }
 
+    List<String> details(Instant now) {
+        WeatherData sample;
+        long expected = RealTimeRules.ticks(now, this.zone());
+        ArrayList<String> lines = new ArrayList<String>();
+        lines.add("현실 " + RealTimeRules.display(now, this.zone()) + " · " + this.zone().getId() + " · 목표 time " + expected);
+        lines.add("동기화 " + (this.enabled() ? "켜짐" : "꺼짐") + " · " + this.p.cfg().getInt("real-time.sync-period-ticks", 1) + "틱 간격 · time 1틱 = 현실 3.6초");
+        for (World w : Bukkit.getWorlds()) {
+            if (!this.target(w)) continue;
+            lines.add(w.getName() + ": time " + w.getTime() + " / 오차 " + RealTimeRules.error(w.getTime(), expected) + "틱");
+        }
+        WeatherData weatherData = sample = this.settings == null ? null : this.weather.usable(this.settings, now);
+        if (sample != null) {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").withZone(this.zone());
+            lines.add("날씨 자료 기준 " + fmt.format(sample.observed()));
+            lines.add("마지막 수신 " + fmt.format(sample.received()) + " · " + this.settings.interval() + "초마다 조회");
+        } else {
+            lines.add("유효한 날씨 자료 대기 중 · 시계 동기화는 독립 유지");
+        }
+        return List.copyOf(lines);
+    }
+
     void command(CommandSender sender, String[] args) {
         if (!BanService.operator(sender)) {
             this.p.tell(sender, "OP만 사용할 수 있습니다.");
+            return;
+        }
+        if (args.length == 1 && Set.of("상태", "status", "time").contains(args[0])) {
+            this.tick();
+            this.p.tell(sender, this.status());
+            this.details(Instant.now()).forEach(line -> this.p.tell(sender, (String)line));
             return;
         }
         if (args.length == 1 && Set.of("켜기", "끄기", "on", "off").contains(args[0])) {
@@ -334,7 +385,9 @@ AutoCloseable {
             Player a = (Player)sender;
             Gui.Menu m = this.p.gui.make(a, "현실 시간·날씨 · 한국 기준");
             m.inventory.setItem(13, Gui.item(Material.CLOCK, this.status(), "새벽 04~06 · 아침 06~11 · 점심 11~17", "저녁 17~20 · 밤 20~04 · 24시간 계속 흐름"));
-            m.inventory.setItem(31, Gui.item(Material.WATER_BUCKET, this.settings == null ? "날씨 설정 확인 필요" : this.settings.location(), this.settings == null ? "" : this.weather.status(this.settings, Instant.now()), "Open-Meteo · 기본 5분마다 최신 제공값 조회", "눈은 추운 바이옴에서 눈으로 표시됩니다."));
+            m.inventory.setItem(31, Gui.item(Material.WATER_BUCKET, this.settings == null ? "날씨 설정 확인 필요" : this.settings.location(), this.settings == null ? "" : this.weather.status(this.settings, Instant.now()), "Open-Meteo · 기본 60초마다 최신 제공값 조회", "눈은 추운 바이옴에서 눈으로 표시됩니다."));
+            m.inventory.setItem(4, Gui.item(Material.COMPASS, "정밀 시계·날씨 시각", (String[])this.details(Instant.now()).toArray(String[]::new)));
+            this.p.gui.button(m, 42, Material.PAPER, "time 오차·날씨 기준 시각", b -> this.command((CommandSender)b, new String[]{"상태"}), "/현실시간 상태");
             this.p.gui.button(m, 20, Material.LIME_WOOL, "현실 동기화 켜기", b -> {
                 this.setEnabled((CommandSender)b, true);
                 this.command((CommandSender)b, new String[0]);

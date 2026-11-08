@@ -49,7 +49,7 @@ AutoCloseable {
 
     @Override
     public WeatherData fetch(WeatherSettings settings) throws Exception {
-        HttpRequest request = HttpRequest.newBuilder(this.uri(settings)).timeout(this.timeout).header("Accept", "application/json").header("User-Agent", "BlackWikiSMP/3.5 (Minecraft weather sync)").GET().build();
+        HttpRequest request = HttpRequest.newBuilder(this.uri(settings)).timeout(this.timeout).header("Accept", "application/json").header("User-Agent", "BlackWikiSMP/"+Version.V+" (Minecraft weather sync)").GET().build();
         CompletableFuture<HttpResponse<String>> future = this.client.sendAsync(request, HttpResponse.BodyHandlers.limiting(HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8), 32768L));
         try {
             HttpResponse<String> response = future.get(this.timeout.toMillis(), TimeUnit.MILLISECONDS);
