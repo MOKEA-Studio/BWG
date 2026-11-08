@@ -9,14 +9,13 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.command.CommandSender;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** All game operations run on the main thread; the Gateway only enqueues messages. */
 final class DiscordBridge implements Listener,AutoCloseable {
-    record Policy(boolean chat,boolean commands,boolean arguments,boolean moderation,Set<String> sensitive){}
+    record Policy(boolean chat,boolean moderation){}
     private final BlackWikiSMP p;
     final DiscordRelay relay;
     private DiscordRelay replies;
@@ -35,9 +34,7 @@ final class DiscordBridge implements Listener,AutoCloseable {
     DiscordBridge(BlackWikiSMP p){this.p=p;options=DiscordOptions.read(p.cfg());relay=new DiscordRelay(options.outgoing());Bukkit.getOnlinePlayers().forEach(a->present.add(a.getUniqueId()));reload();}
     void reload(){
         DiscordOptions next=DiscordOptions.read(p.cfg()),old=options;
-        Set<String> sensitive=new HashSet<>(List.of("login","l","register","reg","changepassword","passwd","password","auth","2fa","pin","email","discord","discordlink","smpdiscord","디스코드","봇","discordbot","msg","tell","w","whisper","teammsg","tm","r","reply","team","팀"));
-        sensitive.addAll(p.cfg().getStringList("discord.redact-command-arguments").stream().map(s->s.toLowerCase(Locale.ROOT)).toList());
-        policy=new Policy(p.cfg().getBoolean("discord.relay-chat",true),p.cfg().getBoolean("discord.relay-commands",true),p.cfg().getBoolean("discord.include-command-arguments",false),p.cfg().getBoolean("discord.relay-moderation",true),Set.copyOf(sensitive));
+        policy=new Policy(p.cfg().getBoolean("discord.relay-chat",true),p.cfg().getBoolean("discord.relay-moderation",true));
         options=next;relay.reload(next.outgoing());power=new PowerCommands(next.control());
         if(next.channel().equals(next.control().channel())){if(replies!=null&&replies!=relay)replies.close();replies=relay;}else{var rs=new DiscordRelay.Settings(next.enabled(),DiscordInbound.id(next.control().channel())?DiscordRelay.endpoint(next.control().channel()):null,next.token(),100,next.interval());if(replies==null||replies==relay)replies=new DiscordRelay(rs);else replies.reload(rs);}
         boolean needGateway=next.configured()&&!next.external()&&(next.receive()||next.control().enabled());
@@ -76,12 +73,10 @@ final class DiscordBridge implements Listener,AutoCloseable {
     private void stop(){if(stopping)return;stopping=true;snapshot();Bukkit.getScheduler().runTaskLater(p,Bukkit::shutdown,20);}
     String status(){return !options.enabled()?"봇 연동 꺼짐":!setup.isEmpty()?setup:relay.state()+" · "+(options.external()?(api!=null&&api.connected()?"외부 도우미 연결됨":"외부 도우미 연결 대기"):gateway==null?"수신 꺼짐":gateway.status())+" · 수신 "+received.get();}
     static String root(String command){String s=command.strip().split("\\s+",2)[0];if(s.startsWith("/"))s=s.substring(1);int colon=s.lastIndexOf(':');return s.substring(colon+1).toLowerCase(Locale.ROOT);}
-    static String commandText(String input,boolean arguments,Set<String> sensitive){String[] parts=input.strip().split("\\s+",2);String root=root(input);boolean hidden=!arguments||sensitive.contains(root);return parts[0]+(parts.length>1?(hidden?" [인수 숨김]":" "+parts[1]):"");}
     static String safe(String text){String flat=text.replace('\n',' ').replace('\r',' ').replaceAll("[\\p{Cc}\\p{Cf}]","");StringBuilder out=new StringBuilder();for(int i=0;i<flat.length();i++){char c=flat.charAt(i);if("\\*_~`|>".indexOf(c)>=0)out.append('\\');out.append(c);}return out.toString();}
-    private void post(String kind,String name,String message,boolean priority){String time=ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DateTimeFormatter.ofPattern("HH:mm:ss"));String line="["+time+"] ["+kind+"] "+safe(name)+": "+safe(message);if(priority)relay.priority(line);else relay.offer(line);}
+    private void post(String kind,String name,String message,boolean priority){String line=DiscordRelay.tag(kind,name.replaceAll("[\\p{Cc}\\p{Cf}]",""),safe(message),System.currentTimeMillis());if(priority)relay.priority(line);else relay.offer(line);}
     void chat(String name,String message){if(policy.chat)post("채팅",name,message,false);}
     void moderation(String actor,String message){if(policy.moderation)post("관리",actor,message,true);}
-    @EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true) public void command(PlayerCommandPreprocessEvent e){Policy c=policy;if(c.commands)post("명령어",e.getPlayer().getName(),commandText(e.getMessage(),c.arguments,c.sensitive),false);}
     @EventHandler(priority=EventPriority.MONITOR) public void loaded(ServerLoadEvent e){if(e.getType()!=ServerLoadEvent.LoadType.STARTUP||started)return;started=true;if(options.serverEvents()&&!options.external())post("서버","BlackWikiSMP 3.3","시작 완료 · 접속 가능",true);}
     @EventHandler(priority=EventPriority.MONITOR) public void join(PlayerJoinEvent e){if(present.add(e.getPlayer().getUniqueId())&&options.playerEvents())post("입장",e.getPlayer().getName(),"서버에 입장했습니다. · 접속 "+Bukkit.getOnlinePlayers().size()+"명",true);}
     @EventHandler(priority=EventPriority.MONITOR) public void quit(PlayerQuitEvent e){if(present.remove(e.getPlayer().getUniqueId())&&options.playerEvents()&&!Bukkit.getServer().isStopping())post("퇴장",e.getPlayer().getName(),"서버에서 퇴장했습니다. · 접속 "+Math.max(0,Bukkit.getOnlinePlayers().size()-1)+"명",true);}

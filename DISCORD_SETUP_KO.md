@@ -29,11 +29,9 @@ discord:
   channel-id: '채팅_채널_ID'
   relay-chat: true
   relay-discord-chat: true
-  relay-commands: true
   relay-player-events: true
   relay-server-events: true
   relay-moderation: true
-  include-command-arguments: false
   control:
     enabled: false
     channel-id: '관리_채널_ID'
@@ -81,7 +79,7 @@ Windows 경로는 예를 들어 `'C:\Program Files\Java\jdk-25\bin\java.exe'`처
 python run_discord_controller.py --server "/서버/폴더" --java "/Java25/bin/java"
 ```
 
-게임 서버 출력은 `blackwikismp-controller/server.log`에 누적됩니다. 도우미 모드에서는 도우미만 Discord 수신과 서버 시작·종료 알림을 담당합니다. 플러그인은 입퇴장·Minecraft 채팅·명령 사용 기록을 전송합니다. 게임 서버를 꺼도 도우미는 실행되어 다시 켤 수 있습니다.
+게임 서버 출력은 `blackwikismp-controller/server.log`에 누적됩니다. 도우미 모드에서는 도우미만 Discord 수신과 서버 시작·종료 알림을 담당합니다. 플러그인은 입퇴장·Minecraft 채팅을 임베드로 전송합니다. 명령어 사용은 전송하지 않습니다. 게임 서버를 꺼도 도우미는 실행되어 다시 켤 수 있습니다.
 
 **Discord 설정 변경 후에는 도우미도 재시작합니다.** 변경 또는 설정 읽기 오류를 감지하면 오래된 권한으로 명령을 받지 않도록 연동을 일시 중지합니다. `/디스코드 끄기`도 다음 설정 확인에서 반영됩니다. 도우미는 실행 중인 게임 프로세스를 강제로 종료하지 않습니다.
 
@@ -122,7 +120,7 @@ python run_discord_controller.py --server "/서버/폴더" --java "/Java25/bin/j
 - 지정 채널의 Discord 텍스트는 `[Discord] 사용자: 내용`으로 보입니다. 게임 욕설 필터를 적용하고 `미친`, `존나` 허용을 유지합니다. 첨부만 있는 메시지·음성·Discord 슬래시 명령은 중계하지 않습니다.
 - 수신 채팅을 Discord로 다시 보내지 않으며 중복 메시지 ID·봇·웹후크를 제외합니다. Gateway 재연결에는 세션 복구와 하트비트 응답 확인을 사용합니다.
 - 실제 서버 준비 후 시작 알림을 보냅니다. 플러그인 모드의 종료 알림은 종료 직전, 도우미 모드는 프로세스 종료 감지 후 보냅니다. 입퇴장에는 이름·접속 인원을 표시하고 중복 이벤트를 걸러 냅니다. 서버 전체 종료 중에는 개별 퇴장 알림을 대량으로 보내지 않습니다.
-- 비밀번호·개인 메시지 인수 숨김, Discord 멘션 알림 차단을 유지합니다. 수신/전송 대기열 크기를 제한하고 HTTP 429는 Discord 대기 시간을 따릅니다. 입퇴장·관리·종료 알림을 일반 채팅보다 우선합니다.
+- 메시지는 종류별 색상 임베드(채팅·입장·퇴장·서버·관리)로 보냅니다. 명령어 사용 기록은 보내지 않으며 Discord 멘션 알림 차단을 유지합니다. 수신/전송 대기열 크기를 제한하고 HTTP 429는 Discord 대기 시간을 따릅니다. 입퇴장·관리·종료 알림을 일반 채팅보다 우선합니다.
 - 같은 설정의 재로드는 전송 대기 메시지를 유지합니다. 토큰/채널 변경 시 이전 메시지를 새 채널로 보내지 않습니다. 인증/권한 오류의 반복 요청을 멈추고 상태에 표시합니다.
 - 장시간 네트워크 장애·대기열 초과·강제 종료·호스트 장애까지 알림 도착을 보장하지 않습니다. 상태의 실패·누락 수를 확인하세요. 종료 시 전송 마무리도 제한된 시간 안에서 처리합니다.
 

@@ -91,10 +91,7 @@ discord:
   bot-token-env: BLACKWIKISMP_DISCORD_BOT_TOKEN
   channel-id: ''
   relay-chat: true
-  relay-commands: true
   relay-moderation: true
-  include-command-arguments: false
-  redact-command-arguments: [login, register, changepassword, auth, msg, tell, w, whisper, team, 팀, smpdiscord, 디스코드]
   max-pending-messages: 500
   flush-interval-ms: 1000
   control:

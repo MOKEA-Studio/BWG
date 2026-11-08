@@ -49,7 +49,21 @@ final class DiscordRelay implements AutoCloseable {
     String state(){synchronized(lock){return state;}}
     int queued(){synchronized(lock){return pending.size()+urgent.size()+(batch==null?0:batchLines);}}
     static String clip(String text,int limit){if(text.length()<=limit)return text;int end=limit-1;if(end>0&&Character.isHighSurrogate(text.charAt(end-1)))end--;return text.substring(0,end)+"…";}
-    static String payload(String text){JsonObject json=new JsonObject();json.addProperty("content",clip(text,1900));json.addProperty("tts",false);JsonObject mentions=new JsonObject();mentions.add("parse",new JsonArray());json.add("allowed_mentions",mentions);return json.toString();}
+    /** Lines from {@link #tag} carry kind/name/time; anything else becomes a plain embed. */
+    static final char SEP='\u0000',RS='\u001e';
+    static String tag(String kind,String name,String message,long millis){return SEP+kind+SEP+name+SEP+message+SEP+millis;}
+    static JsonObject embed(String line){
+        JsonObject e=new JsonObject();String[] f=line.split(String.valueOf(SEP),-1);
+        if(f.length==5&&f[0].isEmpty()){
+            String kind=f[1];e.addProperty("color",switch(kind){case "채팅"->0x5865F2;case "입장"->0x57F287;case "퇴장"->0xED4245;case "서버"->0xFEE75C;case "관리"->0xEB459E;default->0x99AAB5;});
+            JsonObject author=new JsonObject();author.addProperty("name",clip(f[2],250));e.add("author",author);
+            e.addProperty("description",clip(f[3],4000));
+            JsonObject footer=new JsonObject();footer.addProperty("text",switch(kind){case "채팅"->"💬 채팅";case "입장"->"🟢 입장";case "퇴장"->"🔴 퇴장";case "서버"->"🖥️ 서버";case "관리"->"🛡️ 관리";default->kind;});e.add("footer",footer);
+            try{e.addProperty("timestamp",Instant.ofEpochMilli(Long.parseLong(f[4])).toString());}catch(NumberFormatException ignored){}
+        }else{e.addProperty("color",0x99AAB5);e.addProperty("description",clip(line,4000));}
+        return e;
+    }
+    static String payload(String batch){JsonObject json=new JsonObject();JsonArray embeds=new JsonArray();for(String line:batch.split(String.valueOf(RS)))embeds.add(embed(line));json.add("embeds",embeds);json.addProperty("tts",false);JsonObject mentions=new JsonObject();mentions.add("parse",new JsonArray());json.add("allowed_mentions",mentions);return json.toString();}
     static double retrySeconds(Reply r){
         try{JsonElement n=JsonParser.parseString(r.body).getAsJsonObject().get("retry_after");if(n!=null){double v=n.getAsDouble();if(Double.isFinite(v)&&v>=0)return Math.max(.25,v);}}catch(Exception ignored){}
         for(var h:r.headers.entrySet())if(h.getKey().equalsIgnoreCase("Retry-After"))try{return Math.max(.25,Double.parseDouble(h.getValue().getFirst()));}catch(Exception ignored){}
@@ -59,7 +73,7 @@ final class DiscordRelay implements AutoCloseable {
         Settings current;String body;long generation;
         synchronized(lock){
             if(stopped||sending||!settings.enabled||settings.endpoint==null||settings.token==null||settings.token.isEmpty()||permanent||now<next)return;
-            if(batch==null){if(pending.isEmpty()&&urgent.isEmpty())return;StringBuilder joined=new StringBuilder();batchLines=0;while(!urgent.isEmpty()||!pending.isEmpty()){ArrayDeque<String> source=urgent.isEmpty()?pending:urgent;String line=source.peek();if(!joined.isEmpty()&&joined.length()+1+line.length()>1900)break;if(!joined.isEmpty())joined.append('\n');joined.append(source.remove());batchLines++;}batch=joined.toString();retries=0;}
+            if(batch==null){if(pending.isEmpty()&&urgent.isEmpty())return;StringBuilder joined=new StringBuilder();batchLines=0;while(!urgent.isEmpty()||!pending.isEmpty()){ArrayDeque<String> source=urgent.isEmpty()?pending:urgent;String line=source.peek();if(!joined.isEmpty()&&(batchLines>=10||joined.length()+1+line.length()>5000))break;if(!joined.isEmpty())joined.append(RS);joined.append(source.remove());batchLines++;}batch=joined.toString();retries=0;}
             current=settings;generation=revision;body=payload(batch);sending=true;
         }
         Reply response;
