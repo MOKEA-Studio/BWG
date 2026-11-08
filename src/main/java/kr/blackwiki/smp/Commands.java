@@ -49,7 +49,7 @@ final class Commands implements CommandExecutor,TabCompleter {
                 case "vault"->{if(Set.of("업그레이드","upgrade","확장").contains(arg(args,0))){if(arg(args,1).equals("확인"))p.vaults.purchase(a,p.data.user(a).vaultTier);else p.gui.vaultUpgrade(a);}else p.vaults.open(a);}
                 case "queue"->{switch(arg(args,0)){case "나가기","leave"->a.kick(BlackWikiSMP.text("대기를 취소하고 접속을 종료했습니다."));case "테스트","test"->{if(admin(a)){a.closeInventory();p.queue.enqueue(a,true);}}case "목록","list"->{if(admin(a))for(UUID id:p.queue.fifo.list())p.tell(a,p.queue.fifo.position(id)+". "+p.data.name(id));}default->p.gui.queue(a);}}
                 case "smpsettings"->settings(a,args);
-                case "border"->{if(Set.of("표시","hud").contains(arg(args,0))){p.data.user(a).hud=!p.data.user(a).hud;p.data.changed();p.hud.refresh(a);p.tell(a,"경계 HUD: "+Gui.yes(p.data.user(a).hud));}else p.gui.border(a);}
+                case "border"->{if(Set.of("표시","hud").contains(arg(args,0))){p.data.user(a).hud=!p.data.user(a).hud;p.data.changed();p.hud.refresh(a);p.tell(a,"스코어보드 HUD: "+Gui.yes(p.data.user(a).hud));}else p.gui.border(a);}
                 case "smpnpc"->{if(admin(a))npc(a,args);}
                 case "tpa"->{if(args.length!=1)p.tell(a,"/tpa 닉네임");else p.travel.request(a,Bukkit.getPlayerExact(args[0]));}
                 case "tpaaccept"->p.travel.accept(a);
