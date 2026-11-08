@@ -103,7 +103,7 @@ final class AdminTools implements Listener {
         Player target=args.length>0?Bukkit.getPlayerExact(args[0]):actor instanceof Player a?a:null;
         if(target==null){p.tell(actor,"/king [접속 중인 닉네임] · 왕관 씌우기/벗기기");return;}
         var data=target.getPersistentDataContainer();boolean on=!data.has(crownKey,PersistentDataType.BYTE);
-        if(on){data.set(crownKey,PersistentDataType.BYTE,(byte)1);attachCrown(target);}else{data.remove(crownKey);removeCrown(target.getUniqueId());}
+        if(on){data.set(crownKey,PersistentDataType.BYTE,(byte)1);attachCrown(target);Fx.enderBurst(target.getLocation());target.getWorld().strikeLightningEffect(target.getLocation());Fx.announce(p,"👑 "+target.getName(),"새로운 왕이 탄생했습니다",Fx.GOLD);}else{data.remove(crownKey);removeCrown(target.getUniqueId());}
         p.tell(actor,target.getName()+"님 왕관: "+(on?"씌움":"벗김"));if(target!=actor)p.tell(target,on?"머리 위에 왕관이 씌워졌습니다.":"왕관이 벗겨졌습니다.");
     }
     private boolean crowned(Player a){return a.getPersistentDataContainer().has(crownKey,PersistentDataType.BYTE);}
@@ -113,11 +113,11 @@ final class AdminTools implements Listener {
      * interpolated transformation. Real particles are added only while the player stands still,
      * because world particles stay where they spawn and would otherwise leave a trail.
      */
-    private record Crown(ItemDisplay helmet,List<TextDisplay> sparks){
-        List<Display> parts(){List<Display> all=new ArrayList<>(sparks);all.add(helmet);return all;}
+    private record Crown(ItemDisplay helmet,List<TextDisplay> sparks,List<ItemDisplay> eyes){
+        List<Display> parts(){List<Display> all=new ArrayList<>(sparks);all.addAll(eyes);all.add(helmet);return all;}
         void remove(){parts().forEach(Entity::remove);}
     }
-    static final int SPARKS=6,ANIMATE_TICKS=2;
+    static final int SPARKS=6,EYES=3,ANIMATE_TICKS=2;
     private static final String[] GLYPHS={"✦","✧","⋆"};
     private static final TextColor[] SPARK_COLORS={TextColor.color(0xFFD95A),TextColor.color(0xFFF3B0),TextColor.color(0xFFB347)};
     private long crownFrame;
@@ -128,7 +128,7 @@ final class AdminTools implements Listener {
         Location at=a.getLocation();
         ItemDisplay helmet=a.getWorld().spawn(at,ItemDisplay.class,d->{
             d.setPersistent(false);d.setItemStack(new ItemStack(Material.GOLDEN_HELMET));d.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.HEAD);
-            d.setBrightness(new Display.Brightness(15,15));d.setTeleportDuration(0);d.setTransformation(helmetPose(0));
+            d.setBrightness(new Display.Brightness(15,15));d.setTeleportDuration(0);d.setTransformation(helmetPose(0));d.setGlowing(true);d.setGlowColorOverride(Color.fromRGB(0xFFD95A));
         });
         List<TextDisplay> sparks=new ArrayList<>();
         for(int i=0;i<SPARKS;i++){int n=i;sparks.add(a.getWorld().spawn(at,TextDisplay.class,d->{
@@ -136,7 +136,12 @@ final class AdminTools implements Listener {
             d.setBillboard(Display.Billboard.CENTER);d.setBackgroundColor(Color.fromARGB(0,0,0,0));d.setShadowed(false);
             d.setBrightness(new Display.Brightness(15,15));d.setTeleportDuration(0);d.setTransformation(sparkPose(n,0));
         }));}
-        Crown c=new Crown(helmet,sparks);
+        List<ItemDisplay> eyes=new ArrayList<>();
+        for(int i=0;i<EYES;i++){int n=i;eyes.add(a.getWorld().spawn(at,ItemDisplay.class,d->{
+            d.setPersistent(false);d.setItemStack(new ItemStack(Material.ENDER_EYE));d.setBillboard(Display.Billboard.CENTER);
+            d.setBrightness(new Display.Brightness(15,15));d.setTeleportDuration(0);d.setTransformation(eyePose(n,0));
+        }));}
+        Crown c=new Crown(helmet,sparks,eyes);
         for(Display d:c.parts())if(!a.addPassenger(d)){c.remove();return;}
         crowns.put(a.getUniqueId(),c);
     }
@@ -151,12 +156,19 @@ final class AdminTools implements Listener {
         float x=(float)(.42*Math.cos(angle)),z=(float)(.42*Math.sin(angle)),y=(float)(.32+.12*Math.sin(angle*2+i)),s=(float)(.32+.14*Math.max(0,Math.sin(t*5+i*1.7)));
         return new Transformation(new Vector3f(x,y,z),new Quaternionf(),new Vector3f(s,s,s),new Quaternionf());
     }
+    /** Ender eyes circle the head counter-clockwise, slightly lower and wider than the sparks. */
+    static Transformation eyePose(int i,long frame){
+        double t=frame*ANIMATE_TICKS/20.0,angle=-t*1.3+i*2*Math.PI/EYES;
+        float x=(float)(.62*Math.cos(angle)),z=(float)(.62*Math.sin(angle)),y=(float)(.05+.08*Math.sin(t*3+i));
+        return new Transformation(new Vector3f(x,y,z),new Quaternionf(),new Vector3f(.35f,.35f,.35f),new Quaternionf());
+    }
     private void animateCrowns(){
         crownFrame++;
         for(var e:crowns.entrySet()){
             Crown c=e.getValue();
             pose(c.helmet(),helmetPose(crownFrame));
             for(int i=0;i<c.sparks().size();i++)pose(c.sparks().get(i),sparkPose(i,crownFrame));
+            for(int i=0;i<c.eyes().size();i++)pose(c.eyes().get(i),eyePose(i,crownFrame));
             Player a=Bukkit.getPlayer(e.getKey());if(a==null)continue;
             Location now=a.getLocation(),before=lastSpot.put(e.getKey(),now);
             boolean still=before!=null&&before.getWorld()==now.getWorld()&&before.distanceSquared(now)<1e-4;
@@ -164,6 +176,9 @@ final class AdminTools implements Listener {
                 Location head=now.clone().add(0,a.getHeight()+.45,0);
                 a.getWorld().spawnParticle(Particle.DUST,head,3,.3,.12,.3,0,new Particle.DustOptions(Color.fromRGB(0xFFD95A),.7f));
                 a.getWorld().spawnParticle(Particle.ELECTRIC_SPARK,head,1,.25,.1,.25,0);
+                // Ender aura while standing still only: a portal swirl drawn in toward the body and a few rising end rods.
+                Location body=now.clone().add(0,1,0);a.getWorld().spawnParticle(Particle.PORTAL,body,14,.45,.8,.45,.5);a.getWorld().spawnParticle(Particle.REVERSE_PORTAL,body,3,.4,.6,.4,.01);
+                if(crownFrame%12==0)a.getWorld().spawnParticle(Particle.END_ROD,now.clone().add(0,.1,0),4,.5,0,.5,.02);
             }
         }
     }
@@ -184,7 +199,15 @@ final class AdminTools implements Listener {
     /** Drop the crown before any teleport so passengers never block it; keepCrowns re-attaches within a second. */
     @EventHandler(priority=EventPriority.LOWEST) public void teleport(PlayerTeleportEvent e){removeCrown(e.getPlayer().getUniqueId());}
     @EventHandler public void quit(PlayerQuitEvent e){removeCrown(e.getPlayer().getUniqueId());}
-    @EventHandler public void death(org.bukkit.event.entity.PlayerDeathEvent e){removeCrown(e.getPlayer().getUniqueId());}
+    @EventHandler public void death(org.bukkit.event.entity.PlayerDeathEvent e){
+        removeCrown(e.getPlayer().getUniqueId());Player killer=e.getPlayer().getKiller();
+        if(killer!=null&&killer!=e.getPlayer()&&crowned(killer)){killer.getWorld().strikeLightningEffect(e.getPlayer().getLocation());Fx.enderBurst(e.getPlayer().getLocation());for(Player o:Bukkit.getOnlinePlayers())o.playSound(o.getLocation(),Sound.ENTITY_ENDER_DRAGON_GROWL,SoundCategory.PLAYERS,.4f,1.2f);}
+    }
+    /** A crowned player's arrival is announced server-wide. */
+    @EventHandler(priority=EventPriority.MONITOR) public void kingJoin(PlayerJoinEvent e){
+        Player a=e.getPlayer();if(!crowned(a))return;
+        Bukkit.getScheduler().runTaskLater(p,()->{if(!a.isOnline()||p.queue.waiting(a))return;Fx.enderBurst(a.getLocation());Bukkit.broadcast(net.kyori.adventure.text.Component.text("👑 왕 "+a.getName()+"님이 입장했습니다!",Fx.GOLD));for(Player o:Bukkit.getOnlinePlayers())o.playSound(o.getLocation(),Sound.ENTITY_ENDER_DRAGON_GROWL,SoundCategory.MASTER,.5f,1f);},40);
+    }
     void close(){for(Crown c:crowns.values())c.remove();crowns.clear();lastSpot.clear();}
 
     // ---- /핵 닉 [사유]: longest ban, lightning effect, server-wide notice. ----
