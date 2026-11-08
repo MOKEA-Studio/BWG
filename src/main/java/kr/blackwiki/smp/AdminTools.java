@@ -10,6 +10,10 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.TextDisplay;
+import org.bukkit.entity.Entity;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.joml.Quaternionf;
@@ -29,13 +33,13 @@ final class AdminTools implements Listener {
     private final Path file;
 
     private final NamespacedKey crownKey;
-    private final Map<UUID,ItemDisplay> crowns=new HashMap<>();
+    private final Map<UUID,Crown> crowns=new HashMap<>();
     /** /안전일시: while on, OPs may build and kill non-player entities inside protected spawn. Resets on restart. */
     volatile boolean safeOverride;
 
     AdminTools(BlackWikiSMP p)throws Exception{
         this.p=p;crownKey=new NamespacedKey(p,"crown");
-        Bukkit.getScheduler().runTaskTimer(p,this::keepCrowns,20,20);file=p.getDataFolder().toPath().resolve("mutes.yml");if(!Files.exists(file))return;
+        Bukkit.getScheduler().runTaskTimer(p,this::keepCrowns,20,20);Bukkit.getScheduler().runTaskTimer(p,this::animateCrowns,1,ANIMATE_TICKS);file=p.getDataFolder().toPath().resolve("mutes.yml");if(!Files.exists(file))return;
         YamlConfiguration y=new YamlConfiguration();y.load(file.toFile());var section=y.getConfigurationSection("mutes");if(section==null)return;Map<UUID,BanLedger.Entry> map=new LinkedHashMap<>();
         for(String key:section.getKeys(false)){String q="mutes."+key+".";map.put(UUID.fromString(key),new BanLedger.Entry(UUID.fromString(key),y.getString(q+"name",key),y.getString(q+"actor","console"),y.getString(q+"reason","관리자 채팅 제한"),y.getLong(q+"created"),y.getLong(q+"expires")));}
         mutes.replace(map);
@@ -103,26 +107,81 @@ final class AdminTools implements Listener {
         p.tell(actor,target.getName()+"님 왕관: "+(on?"씌움":"벗김"));if(target!=actor)p.tell(target,on?"머리 위에 왕관이 씌워졌습니다.":"왕관이 벗겨졌습니다.");
     }
     private boolean crowned(Player a){return a.getPersistentDataContainer().has(crownKey,PersistentDataType.BYTE);}
+    /**
+     * Crown = spinning gold helmet + orbiting sparkle glyphs, all riding the player as passengers,
+     * so the client moves them with the head every frame (no trail). Their motion is a client-side
+     * interpolated transformation. Real particles are added only while the player stands still,
+     * because world particles stay where they spawn and would otherwise leave a trail.
+     */
+    private record Crown(ItemDisplay helmet,List<TextDisplay> sparks){
+        List<Display> parts(){List<Display> all=new ArrayList<>(sparks);all.add(helmet);return all;}
+        void remove(){parts().forEach(Entity::remove);}
+    }
+    static final int SPARKS=6,ANIMATE_TICKS=2;
+    private static final String[] GLYPHS={"✦","✧","⋆"};
+    private static final TextColor[] SPARK_COLORS={TextColor.color(0xFFD95A),TextColor.color(0xFFF3B0),TextColor.color(0xFFB347)};
+    private long crownFrame;
+    private final Map<UUID,Location> lastSpot=new HashMap<>();
+
     private void attachCrown(Player a){
         removeCrown(a.getUniqueId());if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR)return;
-        ItemDisplay crown=a.getWorld().spawn(a.getLocation(),ItemDisplay.class,d->{
+        Location at=a.getLocation();
+        ItemDisplay helmet=a.getWorld().spawn(at,ItemDisplay.class,d->{
             d.setPersistent(false);d.setItemStack(new ItemStack(Material.GOLDEN_HELMET));d.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.HEAD);
-            d.setBillboard(Display.Billboard.VERTICAL);d.setTeleportDuration(0);d.setInterpolationDuration(0);
-            d.setTransformation(new Transformation(new Vector3f(0,.3f,0),new Quaternionf(),new Vector3f(.75f,.75f,.75f),new Quaternionf()));
+            d.setBrightness(new Display.Brightness(15,15));d.setTeleportDuration(0);d.setTransformation(helmetPose(0));
         });
-        if(!a.addPassenger(crown)){crown.remove();return;}
-        crowns.put(a.getUniqueId(),crown);
+        List<TextDisplay> sparks=new ArrayList<>();
+        for(int i=0;i<SPARKS;i++){int n=i;sparks.add(a.getWorld().spawn(at,TextDisplay.class,d->{
+            d.setPersistent(false);d.text(Component.text(GLYPHS[n%GLYPHS.length],SPARK_COLORS[n%SPARK_COLORS.length]));
+            d.setBillboard(Display.Billboard.CENTER);d.setBackgroundColor(Color.fromARGB(0,0,0,0));d.setShadowed(false);
+            d.setBrightness(new Display.Brightness(15,15));d.setTeleportDuration(0);d.setTransformation(sparkPose(n,0));
+        }));}
+        Crown c=new Crown(helmet,sparks);
+        for(Display d:c.parts())if(!a.addPassenger(d)){c.remove();return;}
+        crowns.put(a.getUniqueId(),c);
     }
-    private void removeCrown(UUID id){ItemDisplay old=crowns.remove(id);if(old!=null)old.remove();}
+    /** Slow spin plus a gentle bob, 0.3 blocks above the head. */
+    static Transformation helmetPose(long frame){
+        double t=frame*ANIMATE_TICKS/20.0;float y=(float)(.3+.04*Math.sin(t*2.2));
+        return new Transformation(new Vector3f(0,y,0),new Quaternionf().rotateY((float)(t*1.4)),new Vector3f(.75f,.75f,.75f),new Quaternionf());
+    }
+    /** Sparks orbit the crown on a tilted ring and twinkle by scaling. */
+    static Transformation sparkPose(int i,long frame){
+        double t=frame*ANIMATE_TICKS/20.0,angle=t*2.0+i*2*Math.PI/SPARKS;
+        float x=(float)(.42*Math.cos(angle)),z=(float)(.42*Math.sin(angle)),y=(float)(.32+.12*Math.sin(angle*2+i)),s=(float)(.32+.14*Math.max(0,Math.sin(t*5+i*1.7)));
+        return new Transformation(new Vector3f(x,y,z),new Quaternionf(),new Vector3f(s,s,s),new Quaternionf());
+    }
+    private void animateCrowns(){
+        crownFrame++;
+        for(var e:crowns.entrySet()){
+            Crown c=e.getValue();
+            pose(c.helmet(),helmetPose(crownFrame));
+            for(int i=0;i<c.sparks().size();i++)pose(c.sparks().get(i),sparkPose(i,crownFrame));
+            Player a=Bukkit.getPlayer(e.getKey());if(a==null)continue;
+            Location now=a.getLocation(),before=lastSpot.put(e.getKey(),now);
+            boolean still=before!=null&&before.getWorld()==now.getWorld()&&before.distanceSquared(now)<1e-4;
+            if(still&&crownFrame%4==0){
+                Location head=now.clone().add(0,a.getHeight()+.45,0);
+                a.getWorld().spawnParticle(Particle.DUST,head,3,.3,.12,.3,0,new Particle.DustOptions(Color.fromRGB(0xFFD95A),.7f));
+                a.getWorld().spawnParticle(Particle.ELECTRIC_SPARK,head,1,.25,.1,.25,0);
+            }
+        }
+    }
+    private static void pose(Display d,Transformation t){d.setInterpolationDelay(0);d.setInterpolationDuration(ANIMATE_TICKS);d.setTransformation(t);}
+    private void removeCrown(UUID id){Crown old=crowns.remove(id);lastSpot.remove(id);if(old!=null)old.remove();}
     private void keepCrowns(){
         crowns.entrySet().removeIf(e->{Player a=Bukkit.getPlayer(e.getKey());if(a!=null&&crowned(a))return false;e.getValue().remove();return true;});
-        for(Player a:Bukkit.getOnlinePlayers()){if(!crowned(a))continue;ItemDisplay d=crowns.get(a.getUniqueId());boolean ok=d!=null&&d.isValid()&&a.getPassengers().contains(d);if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR){if(d!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);}
+        for(Player a:Bukkit.getOnlinePlayers()){
+            if(!crowned(a))continue;Crown c=crowns.get(a.getUniqueId());
+            boolean ok=c!=null&&c.parts().stream().allMatch(d->d.isValid()&&a.getPassengers().contains(d));
+            if(a.isDead()||a.getGameMode()==GameMode.SPECTATOR){if(c!=null)removeCrown(a.getUniqueId());}else if(!ok)attachCrown(a);
+        }
     }
     /** Drop the crown before any teleport so passengers never block it; keepCrowns re-attaches within a second. */
     @EventHandler(priority=EventPriority.LOWEST) public void teleport(PlayerTeleportEvent e){removeCrown(e.getPlayer().getUniqueId());}
     @EventHandler public void quit(PlayerQuitEvent e){removeCrown(e.getPlayer().getUniqueId());}
     @EventHandler public void death(org.bukkit.event.entity.PlayerDeathEvent e){removeCrown(e.getPlayer().getUniqueId());}
-    void close(){for(ItemDisplay d:crowns.values())d.remove();crowns.clear();}
+    void close(){for(Crown c:crowns.values())c.remove();crowns.clear();lastSpot.clear();}
 
     // ---- /핵 닉 [사유]: longest ban, lightning effect, server-wide notice. ----
     void hack(CommandSender actor,String[] args){
