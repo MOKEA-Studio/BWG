@@ -34,7 +34,7 @@ final class TravelService implements Listener {
         Player killer=victim.getKiller();if(killer==null&&c!=null&&c.until>System.currentTimeMillis())killer=Bukkit.getPlayer(c.opponent);
         if(killer!=null&&killer!=victim&&!p.teams.same(killer,victim)&&!p.safe(victim.getLocation())&&!p.queue.waiting(victim)){
             String pair=killer.getUniqueId()+":"+victim.getUniqueId();long now=System.currentTimeMillis();
-            if(kills.getOrDefault(pair,0L)<=now){p.data.user(killer).kills++;kills.put(pair,now+p.cfg().getLong("combat.same-victim-kill-cooldown-seconds",300)*1000);p.swords.playerKill(killer,victim,e);p.events.reward(killer,victim);p.tell(killer,"플레이어 킬 +1");}else p.tell(killer,"같은 상대 반복 킬은 잠시 랭킹에 반영되지 않습니다.");
+            if(kills.getOrDefault(pair,0L)<=now){p.data.user(killer).kills++;kills.put(pair,now+p.cfg().getLong("combat.same-victim-kill-cooldown-seconds",300)*1000);p.swords.playerKill(killer,victim,e);p.events.reward(killer,victim);p.titles.sync(killer);p.tell(killer,"플레이어 킬 +1");}else p.tell(killer,"같은 상대 반복 킬은 잠시 랭킹에 반영되지 않습니다.");
         }p.data.changed();
     }
     @EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true) public void teleport(PlayerTeleportEvent e){

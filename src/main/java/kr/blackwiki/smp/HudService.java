@@ -24,6 +24,7 @@ final class HudService {
             long combat=p.travel.combatLeft(a);if(combat>0)status+=" | 전투 "+combat+"초";
             if(p.newbies.protectedPlayer(a))status+=" | 신규 보호 "+Rules.duration(p.newbies.remaining(a));
         }
+        String clock;if(!p.queue.waiting(a)&&p.realTime!=null&&!(clock=p.realTime.hud()).isBlank())status+=(status.isBlank()?"":" | ")+clock;
         Notice notice=notices.get(a.getUniqueId());String extra=notice!=null&&System.nanoTime()-notice.until<0?notice.text:"";
         return HudRules.compose(p.data.user(a).coins,status,extra,p.pistols==null?"":p.pistols.hud(a));
     }

@@ -74,7 +74,7 @@ settings:
   persist-seconds: 60
 
 # 설정 버전은 자동 관리됩니다. 데이터 폴더를 삭제하지 마세요.
-config-version: 33
+config-version: 35
 # Minecraft → Discord 봇 계정으로 채팅/명령/관리 기록을 전송합니다.
 # Discord Developer Portal의 Bot Token과 전송할 텍스트 채널 ID를 입력합니다.
 discord:
@@ -202,7 +202,7 @@ bedrock:
 pistol:
   enabled: true
 
-# 3.3: 7가지 안내 중 하나를 5분마다 채팅으로 전송합니다. /도움말
+# 3.4: 21가지 안내 중 하나를 5분마다 채팅으로 전송합니다. /도움말
 help-tips:
   enabled: true
 
@@ -217,3 +217,19 @@ auto-update:
   # 공개 저장소 owner/repo. 비워 두면 확인하지 않습니다.
   repository: 'MOKEA-Studio/BWG'
   check-interval-minutes: 30
+
+# 한국 시간의 24시간 낮밤 동기화: OP /현실시간 켜기|끄기
+real-time:
+  enabled: false
+  timezone: Asia/Seoul
+  show-hud: true
+  # Open-Meteo 현재 제공값. 칠원읍 인근 대표 좌표이며 변경 가능합니다.
+  weather:
+    enabled: true
+    location: 경남 함안군 칠원읍
+    latitude: 35.30
+    longitude: 128.52
+    poll-seconds: 300
+    max-age-seconds: 1800
+spawn-lighting:
+  auto-install: true

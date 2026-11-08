@@ -7,9 +7,18 @@ description: Korean raid SMP - GUI, FIFO queue, safe spawn, teams, rankings, bor
 load: POSTWORLD
 softdepend: [voicechat, floodgate, Geyser-Spigot, ViaVersion]
 commands:
+  smptitle:
+    aliases: [칭호, title]
+    description: 무료·구매·킬 달성 칭호 GUI
+  smprealtime:
+    aliases: [현실시간]
+    description: OP 현실 시간·날씨 동기화
+  smplights:
+    aliases: [스폰조명]
+    description: OP 발광석 가로등 설치 상태
   smptips:
     aliases: [도움말, 이용도움말]
-    description: 7가지 서버 이용 도움말 GUI
+    description: 21가지 서버 이용 도움말 GUI
   smpcoingive:
     aliases: [코인지급]
     description: OP 전용 접속 중 플레이어 코인 지급 / 관리 GUI
